@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <boost/static_assert.hpp>
 #include <vector>
+#include <base/Time.hpp>
+#include <base/JointState.hpp>
 
 namespace motoman_mh12
 {
@@ -36,6 +38,19 @@ namespace motoman_mh12
       bool mode; //!< Controller/Pendant mode 1=Manual(Teach); 0= Auto(Play or Remtote)
       bool motion_possible; //!< Controller can receive motion for ROS 1=Enabled; 0=Disabled
     };
+    
+    struct MotomanJointTrajPtFull
+    {
+      int robot_id; // 0 = 1st robot
+      int sequence; //index of point in trajectory 0 = initial point in trajectory, which should match
+		    // the robot current position
+      int valid_field; // Bit-mask indicating which “optional” fields are filled with data.
+		       //1 = time, 2 = position, 4 = velocity, 8 = acceleration 
+		       //MotoROS expects all values, so this value should be set to 7.
+      base::Time time; //timestamp associated with this trajectory point in seconds
+      std::vector<base::JointState> joint_states;
+    };
+  
   }
 }
 #endif    

@@ -2,6 +2,7 @@
 #include "motoman_mh12Constants.hpp"
 #include "motoman_mh12Msgs.hpp"
 #include <iostream>
+#include <string.h>
 
 using namespace motoman_mh12;
 Driver::Driver()
@@ -37,9 +38,39 @@ int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
 	return 0;
       else
 	return MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE;
-    
-    default:
-      return -1;
+      
+    case MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL:
+      if(buffer_size<MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL_MIN_SIZE)
+	return 0;
+      //check the buffer size for the different valid field options
+      switch(buffer_as_int32[2])
+	case 1: // time option
+	  if(buffer_size < MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL_TIME_SIZE)
+	    return 0;
+	  else
+	    return MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL_TIME_SIZE;
+	case 2: //position
+	  if(buffer_size < MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL_POS_SIZE)
+	    return 0;
+	  else 
+	    return MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL_POS_SIZE;
+	case 4: //velocity
+	  if(buffer_size < MotomanMsgTypes::MOTMAN_JOINT_TRAJ_PT_FULL_VEL_SIZE)
+	    return 0;
+	  else
+	    return MotomanMsgTypes::MOTMAN_JOINT_TRAJ_PT_FULL_VEL_SIZE;
+	case 8: //acceletarions
+	  if(buffer_size < MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL_ACC_SIZE)
+	    return 0;
+	  else
+	    return MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL_ACC_SIZE;
+	case 7: //All the fields are selected and it assumed to be set as default
+	  if(buffer_size < MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL_ALL_SIZE)
+	    return 0;
+	  else
+	    return MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL_ALL_SIZE;
+	default:
+	  return -1;
   }
 }
 
@@ -87,4 +118,53 @@ void Driver::parseReadStatus(uint8_t const* buffer, size_t size)
     throw std::runtime_error("ROCK communication state is unknown");
   else
     status.motion_possible = bool(msg.motion_possible);
+}
+
+void Driver::parseJointTrajPtFull(uint8_t const* buffer, size_t size)
+{
+  int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(buffer);
+  msgs::MotomanJointTrajPtFull joint_traj_pt_full;
+  joint_traj_pt_full.robot_id = int(buffer_as_int32[0]);
+  joint_traj_pt_full.sequence = int(buffer_as_int32[0]);
+  joint_traj_pt_full.valid_field = int(buffer_as_int32[0]);
+  float const* buffer_as_float = reinterpret_cast<float const*>(&buffer[3*4]);
+  switch(joint_traj_pt_full.valid_field)
+  {
+    case 1: // time option
+      joint_traj_pt_full.time.fromSeconds(float(buffer_as_float[0]));
+    case 2: //position
+      for(int i = 0; i<10; i++)
+      {
+	joint_traj_pt_full.time.fromSeconds(buffer_as_float[0]);
+	base::JointState joint_state;
+	joint_state.position = double(buffer_as_float[1+i]);
+	joint_traj_pt_full.joint_states.push_back(joint_state);
+      }
+    case 4: //velocity
+      for(int i = 0; i<10; i++)
+      {
+	joint_traj_pt_full.time.fromSeconds(buffer_as_float[0]);
+	base::JointState joint_state;
+	joint_state.speed = buffer_as_float[11+i];
+	joint_traj_pt_full.joint_states.push_back(joint_state);
+      }
+    case 8: //acceletarions
+      for(int i = 0; i<10; i++)
+      {
+	joint_traj_pt_full.time.fromSeconds(buffer_as_float[0]);
+	base::JointState joint_state;
+	joint_state.acceleration = buffer_as_float[21+i];
+	joint_traj_pt_full.joint_states.push_back(joint_state);
+      }
+    case 7: //All the fields are selected and it assumed to be set as default
+      for(int i = 0; i<10; i++)
+      {
+	joint_traj_pt_full.time.fromSeconds(buffer_as_float[0]);
+	base::JointState joint_state;
+	joint_state.position = double(buffer_as_float[1+i]);
+	joint_state.speed = buffer_as_float[11+i];
+	joint_state.acceleration = buffer_as_float[21+i];
+	joint_traj_pt_full.joint_states.push_back(joint_state);
+      }	    
+  }
 }
