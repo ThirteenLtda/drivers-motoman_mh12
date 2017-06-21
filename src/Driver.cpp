@@ -11,21 +11,21 @@ Driver::Driver()
 
 void Driver::open(std::string const& uri)
 {
-  openURI(uri);
+    openURI(uri);
 }
 
 void Driver::read()
 {
-  uint8_t buffer[10000];
-  int packet_size = readPacket(buffer, 10000);
-  parsePacket(buffer, packet_size);
+    uint8_t buffer[10000];
+    int packet_size = readPacket(buffer, 10000);
+    parsePacket(buffer, packet_size);
 }
 
 // Reimplement close() only if you have specific things to do
 // with your device before closing the I/O
 void Driver::close()
 {
-  iodrivers_base::Driver::close();
+    iodrivers_base::Driver::close();
 }
 
 int Driver::returnMsgSize(int msg_type) const
@@ -111,51 +111,32 @@ void Driver::parseReadStatus(uint8_t const* buffer, size_t size)
         status.motion_possible = bool(msg.motion_possible);
 }
 
-void Driver::parseJointTrajPtFull(uint8_t const* buffer, size_t size)
+void Driver::parseJointFeedback(uint8_t const* buffer, size_t size)
 {
-  int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(buffer);
-  msgs::MotomanJointTrajPtFull joint_traj_pt_full;
-  joint_traj_pt_full.robot_id = int(buffer_as_int32[0]);
-  joint_traj_pt_full.sequence = int(buffer_as_int32[0]);
-  joint_traj_pt_full.valid_field = int(buffer_as_int32[0]);
-  float const* buffer_as_float = reinterpret_cast<float const*>(&buffer[3*4]);
-  switch(joint_traj_pt_full.valid_field)
-  {
-    case 1: // time option
-      joint_traj_pt_full.time.fromSeconds(float(buffer_as_float[0]));
-    case 2: //position
-      for(int i = 0; i<10; i++)
-      {
-	joint_traj_pt_full.time.fromSeconds(buffer_as_float[0]);
-	base::JointState joint_state;
-	joint_state.position = double(buffer_as_float[1+i]);
-	joint_traj_pt_full.joint_states.push_back(joint_state);
-      }
-    case 4: //velocity
-      for(int i = 0; i<10; i++)
-      {
-	joint_traj_pt_full.time.fromSeconds(buffer_as_float[0]);
-	base::JointState joint_state;
-	joint_state.speed = buffer_as_float[11+i];
-	joint_traj_pt_full.joint_states.push_back(joint_state);
-      }
-    case 8: //acceletarions
-      for(int i = 0; i<10; i++)
-      {
-	joint_traj_pt_full.time.fromSeconds(buffer_as_float[0]);
-	base::JointState joint_state;
-	joint_state.acceleration = buffer_as_float[21+i];
-	joint_traj_pt_full.joint_states.push_back(joint_state);
-      }
-    case 7: //All the fields are selected and it assumed to be set as default
-      for(int i = 0; i<10; i++)
-      {
-	joint_traj_pt_full.time.fromSeconds(buffer_as_float[0]);
-	base::JointState joint_state;
-	joint_state.position = double(buffer_as_float[1+i]);
-	joint_state.speed = buffer_as_float[11+i];
-	joint_state.acceleration = buffer_as_float[21+i];
-	joint_traj_pt_full.joint_states.push_back(joint_state);
-      }	    
-  }
+    int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(&buffer[4*4]);
+    msgs::MotomanJointFeedback joint_feedback;
+    joint_feedback.robot_id = int(buffer_as_int32[1]);
+    joint_feedback.valid_field = int(buffer_as_int32[3]);
+    if(joint_feedback.valid_field !=2)
+        throw std::runtime_error("Bit-masking of valid field inconsistent");
+    
+    float const* buffer_as_float = reinterpret_cast<float const*>(&buffer_as_int32[2]);
+    for(int i = 0; i<10; i++)
+    {
+        joint_feedback.time.fromSeconds(buffer_as_float[0]);
+        base::JointState joint_state;
+        joint_state.position = double(buffer_as_float[1+i]);
+        joint_feedback.joint_states.push_back(joint_state);
+    }
+    
+}
+
+void Driver::parseMotionReply(uint8_t const* buffer, size_t size)
+{
+    msgs::MotionReplyMsg const& msg = *reinterpret_cast<msgs::MotionReplyMsg const*>(buffer);
+}
+
+void Driver::parseReadSingleIOReply(uint8_t const* buffer, size_t size)
+{
+    msgs::ReadSingleIoReplyMsg const& msg = *reinterpret_cast<msgs::ReadSingleIoReplyMsg const*>(buffer);
 }

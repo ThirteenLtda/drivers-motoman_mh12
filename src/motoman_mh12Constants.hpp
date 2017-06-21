@@ -109,42 +109,35 @@ namespace motoman_mh12
     
     namespace MotomanMsgTypes
     {
+        enum MotomanMsgType
+        {
+            MOTOMAN_ROBOT_STATUS = 13,
+            MOTOMAN_JOINT_TRAJ_PT_FULL = 14,
+            MOTOMAN_JOINT_FEEDBACK = 15,
+            MOTOMAN_MSG_BEGIN = 2000,
+            MOTOMAN_MOTION_CTRL = 2001,
+            MOTOMAN_MOTION_REPLY = 2002,
+            MOTOMAN_READ_SINGLE_IO = 2003,
+            MOTOMAN_READ_SINGLE_IO_REPLY = 2004,
+            MOTOMAN_WRITE_SINGLE_IO = 2005,
+            MOTOMAN_WRITE_SINGLE_IO_REPLY = 2006,
+            ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016, // This is similar to the "Dynamic Joint Point" in REP I0001
+            ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017 //Similar to Dynamic Joint State on the REP I0001
+        };
+        
+        enum MotomanMsgSize
+        {
+            MOTOMAN_HEADER_MSG_SIZE = 12,
+            MOTOMAN_ROBOT_STATUS_SIZE = 35,
+            MOTOMAN_JOINT_FEEDBACK_SIZE = 136,
+            MOTOMAN_MOTION_REPLY_SIZE = 20,
+            MOTOMAN_READ_SINGLE_IO_REPLY_SIZE = 12,
+            MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE = 8
+        };
+        
+        typedef MotomanMsgTypes::MotomanMsgType MotomanMsgType;
     }
-    typedef WriteSingleIOReplyResults::WriteSingleIOReplyResult WriteSingleIOReplyResult;
-  }
-  
-  namespace MotomanMsgTypes
-  {
-    enum MotomanMsgType
-    {
-      MOTOMAN_ROBOT_STATUS = 13,
-      MOTOMAN_JOINT_TRAJ_PT_FULL = 14,
-      MOTOMAN_JOINT_FEEDBACK = 15,
-      MOTOMAN_MSG_BEGIN = 2000,
-      MOTOMAN_MOTION_CTRL = 2001,
-      MOTOMAN_MOTION_REPLY = 2002,
-      MOTOMAN_READ_SINGLE_IO = 2003,
-      MOTOMAN_READ_SINGLE_IO_REPLY = 2004,
-      MOTOMAN_WRITE_SINGLE_IO = 2005,
-      MOTOMAN_WRITE_SINGLE_IO_REPLY = 2006,
-      ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016, // This is similar to the "Dynamic Joint Point" in REP I0001
-      ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017 //Similar to Dynamic Joint State on the REP I0001
-    };
     
-    enum MotomanMsgSize
-    {
-      MOTOMAN_ROBOT_STATUS_SIZE = 35,
-      MOTOMAN_JOINT_TRAJ_PT_FULL_MIN_SIZE = 12,
-      MOTOMAN_JOINT_TRAJ_PT_FULL_TIME_SIZE = 16,
-      MOTOMAN_JOINT_TRAJ_PT_FULL_POS_SIZE = 52,
-      MOTMAN_JOINT_TRAJ_PT_FULL_VEL_SIZE = 52,
-      MOTOMAN_JOINT_TRAJ_PT_FULL_ACC_SIZE = 52,
-      MOTOMAN_JOINT_TRAJ_PT_FULL_ALL_SIZE = 136
-    };
     
-    typedef MotomanMsgTypes::MotomanMsgType MotomanMsgType;
-  }
-  
- 
 }
 #endif //_MOTOMAN_MH12_CONSTANTS_HPP_
