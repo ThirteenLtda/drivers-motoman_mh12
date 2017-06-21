@@ -22,7 +22,9 @@ namespace motoman_mh12
 	int extractPacket (uint8_t const *buffer, size_t buffer_size) const;
 	void parsePacket(uint8_t const* buffer, size_t size);
 	void parseReadStatus(uint8_t const* buffer, size_t size);
-	void parseJointTrajPtFull(uint8_t const* buffer, size_t size);
+	void parseJointFeedback(uint8_t const* buffer, size_t size);
+    void parseMotionReply(uint8_t const* buffer, size_t size);
+    void parseReadSingleIOReply(uint8_t const* buffer, size_t size);
    };
 }
 
