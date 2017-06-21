@@ -3,135 +3,112 @@
 
 namespace motoman_mh12
 {
-  
-  namespace rs232_msgs
-  {
-    static const uint16_t MOTOMAN_MH12_DLE = 0x10; //!<Data Link Escape
-    static const uint16_t MOTOMAN_MH12_SOH = 0x01; //!<Start of Heading 
-    static const uint16_t MOTOMAN_MH12_STX = 0x02; //!<Start of Text
-    static const uint16_t MOTOMAN_MH12_ETX = 0x03; //!<End of Text
-    static const uint16_t MOTOMAN_MH12_EOT = 0x04; //!<End of Transmission
-    static const uint16_t MOTOMAN_MH12_ENQ = 0x05; //!<Enquiry
-    static const uint16_t MOTOMAN_MH12_NAK = 0x15; //!<Negative Acknowledgment
-    static const uint16_t MOTOMAN_MH12_ETB = 0x17; //!<End of Text Block
-    static const uint16_t MOTOMAN_MH12_ACK0 = 0x30; //!<Even Affirmative Acknowledgment
-    static const uint16_t MOTOMAN_MH12_ACK1 = 0x31; //!<Odd Affirmative Acknowledgment
-    static const uint16_t MOTOMAN_MH12_ACK = 0x10; //!<Affirmative Acknowledgment
-  }
-  
-  //messages used in the interface with MOTO ROS and gathered from the simple_message package
-  //https://github.com/ros-industrial/motoman
-  
-  namespace motion_ctrl
-  {
-    /**
-     * \brief Enumeration of motion control command codes.
-     */
-    namespace MotionControlCmds
-    {
-      enum MotionControlCmd
-      {
-	UNDEFINED          = 0,
-	CHECK_MOTION_READY = 200101,  // check if controller is ready to receive ROS motion cmds
-	CHECK_QUEUE_CNT    = 200102,  // get number of motion increments in queue
-	STOP_MOTION        = 200111,  // stop robot motion immediately
-	START_TRAJ_MODE    = 200121,  // prepare controller to receive ROS motion cmds
-	STOP_TRAJ_MODE     = 200122,  // return motion control to INFORM
-      };
-    } // namespace MotionControlCmds
-  }
-  namespace motion_reply
-  {
     
-    /**
-     * \brief Enumeration of motion reply result codes.
-     */
-    namespace MotionReplyResults
+    namespace rs232_msgs
     {
-      enum MotionReplyResult
-      {
-	SUCCESS    = 0,
-	TRUE       = 0,
-	BUSY       = 1,
-	FAILURE    = 2,
-	FALSE      = 2,
-	INVALID    = 3,
-	ALARM      = 4,
-	NOT_READY  = 5,
-	MP_FAILURE = 6
-      };
+        static const uint16_t MOTOMAN_MH12_DLE = 0x10; //!<Data Link Escape
+        static const uint16_t MOTOMAN_MH12_SOH = 0x01; //!<Start of Heading 
+        static const uint16_t MOTOMAN_MH12_STX = 0x02; //!<Start of Text
+        static const uint16_t MOTOMAN_MH12_ETX = 0x03; //!<End of Text
+        static const uint16_t MOTOMAN_MH12_EOT = 0x04; //!<End of Transmission
+        static const uint16_t MOTOMAN_MH12_ENQ = 0x05; //!<Enquiry
+        static const uint16_t MOTOMAN_MH12_NAK = 0x15; //!<Negative Acknowledgment
+        static const uint16_t MOTOMAN_MH12_ETB = 0x17; //!<End of Text Block
+        static const uint16_t MOTOMAN_MH12_ACK0 = 0x30; //!<Even Affirmative Acknowledgment
+        static const uint16_t MOTOMAN_MH12_ACK1 = 0x31; //!<Odd Affirmative Acknowledgment
+        static const uint16_t MOTOMAN_MH12_ACK = 0x10; //!<Affirmative Acknowledgment
     }
     
-    typedef MotionReplyResults::MotionReplyResult MotionReplyResult;
+    //messages used in the interface with MOTO ROS and gathered from the simple_message package
+    //https://github.com/ros-industrial/motoman
     
-    /*
-     * \brief Enumeration of Motion reply subcodes
-     */
-    namespace MotionReplySubcodes
+    namespace motion_ctrl
     {
-      namespace Invalid
-      {
-	enum InvalidCode
-	{
-	  UNSPECIFIED = 3000,
-	  MSGSIZE,
-	  MSGHEADER,
-	  MSGTYPE,
-	  GROUPNO,
-	  SEQUENCE,
-	  COMMAND,
-	  DATA = 3010,
-	  DATA_START_POS,
-	  DATA_POSITION,
-	  DATA_SPEED,
-	  DATA_ACCEL,
-	  DATA_INSUFFICIENT
-	};
-      }  // namespace Invalid
-      
-      namespace NotReady
-      {
-	enum NotReadyCode
-	{
-	  UNSPECIFIED = 5000,
-	  ALARM,
-	  ERROR,
-	  ESTOP,
-	  NOT_PLAY,
-	  NOT_REMOTE,
-	  SERVO_OFF,
-	  HOLD,
-	  NOT_STARTED,
-	  WAITING_ROS,
-	  SKILLSEND
-	};
-      }  // namespace NotReady
-    }  // MotionReplySubcodes
-  }
-  
-  namespace io_ctrl_reply
-  {
-    
-    /**
-     * \brief Enumeration of Read Single IO reply result codes.
-     */
-    namespace ReadSingleIOReplyResults
-    {
-      enum ReadSingleIOReplyResult
-      {
-	FAILURE    = 0,
-	SUCCESS    = 1
-      };
+        /**
+         * \brief Enumeration of motion control command codes.
+         */
+        namespace MotionControlCmds
+        {
+            enum MotionControlCmd
+            {
+                UNDEFINED          = 0,
+                CHECK_MOTION_READY = 200101,  // check if controller is ready to receive ROS motion cmds
+                CHECK_QUEUE_CNT    = 200102,  // get number of motion increments in queue
+                STOP_MOTION        = 200111,  // stop robot motion immediately
+                START_TRAJ_MODE    = 200121,  // prepare controller to receive ROS motion cmds
+                STOP_TRAJ_MODE     = 200122,  // return motion control to INFORM
+            };
+        } // namespace MotionControlCmds
     }
-    typedef ReadSingleIOReplyResults::ReadSingleIOReplyResult ReadSingleIOReplyResult;
-    
-    namespace WriteSingleIOReplyResults
+    namespace motion_reply
     {
-      enum WriteSingleIOReplyResult
-      {
-	FAILURE    = 0,
-	SUCCESS    = 1
-      };
+        
+        /**
+         * \brief Enumeration of motion reply result codes.
+         */
+        namespace MotionReplyResults
+        {
+            enum MotionReplyResult
+            {
+                SUCCESS    = 0,
+                BUSY       = 1,
+                FAILURE    = 2,
+                INVALID    = 3,
+                ALARM      = 4,
+                NOT_READY  = 5,
+                MP_FAILURE = 6
+            };
+        }
+        
+        typedef MotionReplyResults::MotionReplyResult MotionReplyResult;
+        
+        /*
+         * \brief Enumeration of Motion reply subcodes
+         */
+        namespace MotionReplySubcodes
+        {
+            namespace Invalid
+            {
+                enum InvalidCode
+                {
+                    UNSPECIFIED = 3000,
+                    MSGSIZE,
+                    MSGHEADER,
+                    MSGTYPE,
+                    GROUPNO,
+                    SEQUENCE,
+                    COMMAND,
+                    DATA = 3010,
+                    DATA_START_POS,
+                    DATA_POSITION,
+                    DATA_SPEED,
+                    DATA_ACCEL,
+                    DATA_INSUFFICIENT
+                };
+            }  // namespace Invalid
+            
+            namespace NotReady
+            {
+                enum NotReadyCode
+                {
+                    UNSPECIFIED = 5000,
+                    ALARM,
+                    ERROR,
+                    ESTOP,
+                    NOT_PLAY,
+                    NOT_REMOTE,
+                    SERVO_OFF,
+                    HOLD,
+                    NOT_STARTED,
+                    WAITING_ROS,
+                    SKILLSEND
+                };
+            }  // namespace NotReady
+        }  // MotionReplySubcodes
+    }
+    
+    namespace MotomanMsgTypes
+    {
     }
     typedef WriteSingleIOReplyResults::WriteSingleIOReplyResult WriteSingleIOReplyResult;
   }
