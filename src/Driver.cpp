@@ -9,11 +9,11 @@ Driver::Driver()
 : iodrivers_base::Driver(10000) {}
 // The count above is the maximum packet size
 
-void Driver::read()
+int Driver::read()
 {
     uint8_t buffer[10000];
     int packet_size = readPacket(buffer, 10000);
-    parsePacket(buffer, packet_size);
+    return parsePacket(buffer, packet_size);
 }
 
 int Driver::returnMsgSize(int msg_type) const
@@ -49,19 +49,17 @@ int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
     
 }
 
-void Driver::parsePacket(uint8_t const* buffer, size_t size)
+int Driver::parsePacket(uint8_t const* buffer, size_t size)
 {
     int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(buffer);
     switch(buffer_as_int32[1])
     {
         case MotomanMsgTypes::MOTOMAN_ROBOT_STATUS:
             parseReadStatus(buffer,size);
+            return MotomanMsgTypes::MOTOMAN_ROBOT_STATUS;
         case MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK:
             parseJointFeedback(buffer,size);
-        case MotomanMsgTypes::MOTOMAN_MOTION_REPLY:
-            parseMotionReply(buffer,size);
-        case MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY:
-            parseReadSingleIOReply(buffer,size);
+            return MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK;
     }
 }
 
