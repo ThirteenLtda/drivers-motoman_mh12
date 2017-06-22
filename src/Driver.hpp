@@ -13,12 +13,12 @@ namespace motoman_mh12
     public:
         Driver();
         /** Read available packets on the I/O */
-        void read();
+        int read();
         
         int extractPacket (uint8_t const *buffer, size_t buffer_size) const;
         
         int returnMsgSize(int msg_type) const;
-        void parsePacket(uint8_t const* buffer, size_t size);
+        int parsePacket(uint8_t const* buffer, size_t size);
         void parseReadStatus(uint8_t const* buffer, size_t size);
         void parseJointFeedback(uint8_t const* buffer, size_t size);
         void parseMotionReply(uint8_t const* buffer, size_t size);
