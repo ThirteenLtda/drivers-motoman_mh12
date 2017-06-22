@@ -65,38 +65,28 @@ void Driver::parsePacket(uint8_t const* buffer, size_t size)
     }
 }
 
+
+static bool interpret_tristate(int32_t flag)
+{
+    if(flag == -1)
+        throw std::runtime_error("Unknown state received.");
+    return bool(flag);
+}
+
 void Driver::parseReadStatus(uint8_t const* buffer, size_t size)
 {
     msgs::StatusMsg const& msg = *reinterpret_cast<msgs::StatusMsg const*>(buffer);
     msgs::MotomanStatus status;
-    if (msg.drives_powered == -1)
-        throw std::runtime_error("robot drivers in unknown state");
-    else 
-        status.drives_powered = bool(msg.drives_powered);
-    if(msg.e_stopped == -1)
-        throw std::runtime_error("e-stop controller in unkown state");
-    else
-        status.e_stopped = bool(msg.e_stopped);
+    status.drives_powered = interpret_tristate(msg.drives_powered);
+    status.e_stopped = interpret_tristate(msg.e_stopped);
     if(msg.error_code == -1)
         throw std::runtime_error("alarms in unkown state");
     else
         status.error_code = int(msg.error_code);
-    if(msg.ln_error == -1)
-        throw std::runtime_error("alarms in unkown state");
-    else 
-        status.ln_error = bool(msg.ln_error);
-    if(msg.ln_motion == -1)
-        throw std::runtime_error("controller in unkown state");
-    else
-        status.ln_motion = bool(msg.ln_motion);
-    if(msg.mode == -1)
-        throw std::runtime_error("controller mode is unknown");
-    else 
-        status.mode = bool(msg.mode);
-    if(msg.motion_possible == -1)
-        throw std::runtime_error("ROCK communication state is unknown");
-    else
-        status.motion_possible = bool(msg.motion_possible);
+    status.ln_error = interpret_tristate(msg.ln_error);
+    status.ln_motion = interpret_tristate(msg.ln_motion);
+    status.mode = interpret_tristate(msg.mode);
+    status.motion_possible = interpret_tristate(msg.motion_possible);
 }
 
 void Driver::parseJointFeedback(uint8_t const* buffer, size_t size)
