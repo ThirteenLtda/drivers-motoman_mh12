@@ -42,6 +42,10 @@ int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
     int length = buffer_as_int32[0];
     int msg_type = buffer_as_int32[1];
     int expected_length = returnMsgSize(msg_type);
+    
+    if (expected_length == -1)
+        return expected_length;
+    
     if(length>=expected_length)
         return expected_length;
     else
@@ -97,9 +101,9 @@ void Driver::parseJointFeedback(uint8_t const* buffer, size_t size)
         throw std::runtime_error("Bit-masking of valid field inconsistent");
     
     float const* buffer_as_float = reinterpret_cast<float const*>(&buffer_as_int32[2]);
+    joint_feedback.time.fromSeconds(buffer_as_float[0]);
     for(int i = 0; i<10; i++)
     {
-        joint_feedback.time.fromSeconds(buffer_as_float[0]);
         base::JointState joint_state;
         joint_state.position = double(buffer_as_float[1+i]);
         joint_feedback.joint_states.push_back(joint_state);
