@@ -78,7 +78,6 @@ static bool interpret_tristate(int32_t flag)
 void Driver::parseReadStatus(uint8_t const* buffer, size_t size)
 {
     msgs::StatusMsg const& msg = *reinterpret_cast<msgs::StatusMsg const*>(buffer);
-    msgs::MotomanStatus status;
     status.drives_powered = interpret_tristate(msg.drives_powered);
     status.e_stopped = interpret_tristate(msg.e_stopped);
     if(msg.error_code == -1)
@@ -94,7 +93,6 @@ void Driver::parseReadStatus(uint8_t const* buffer, size_t size)
 void Driver::parseJointFeedback(uint8_t const* buffer, size_t size)
 {
     int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(&buffer[4*4]);
-    msgs::MotomanJointFeedback joint_feedback;
     joint_feedback.robot_id = int(buffer_as_int32[1]);
     joint_feedback.valid_field = int(buffer_as_int32[3]);
     if(joint_feedback.valid_field !=2)

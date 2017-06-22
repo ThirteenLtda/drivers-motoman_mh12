@@ -3,6 +3,7 @@
 #define MOTOMAN_MH12_DRIVER_HPP
 
 #include <iodrivers_base/Driver.hpp>
+#include "motoman_mh12Msgs.hpp"
 
 namespace motoman_mh12
 {
@@ -23,6 +24,9 @@ namespace motoman_mh12
         void parseJointFeedback(uint8_t const* buffer, size_t size);
         void parseMotionReply(uint8_t const* buffer, size_t size);
         void parseReadSingleIOReply(uint8_t const* buffer, size_t size);
+        
+        msgs::MotomanStatus status;
+        msgs::MotomanJointFeedback joint_feedback;
     };
 }
 
