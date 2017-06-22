@@ -9,23 +9,11 @@ Driver::Driver()
 : iodrivers_base::Driver(10000) {}
 // The count above is the maximum packet size
 
-void Driver::open(std::string const& uri)
-{
-    openURI(uri);
-}
-
 void Driver::read()
 {
     uint8_t buffer[10000];
     int packet_size = readPacket(buffer, 10000);
     parsePacket(buffer, packet_size);
-}
-
-// Reimplement close() only if you have specific things to do
-// with your device before closing the I/O
-void Driver::close()
-{
-    iodrivers_base::Driver::close();
 }
 
 int Driver::returnMsgSize(int msg_type) const

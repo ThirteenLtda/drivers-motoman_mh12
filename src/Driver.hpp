@@ -12,13 +12,9 @@ namespace motoman_mh12
         
     public:
         Driver();
-        
-        void open(std::string const& uri);
-        
         /** Read available packets on the I/O */
         void read();
         
-        void close();
         int extractPacket (uint8_t const *buffer, size_t buffer_size) const;
         
         int returnMsgSize(int msg_type) const;
