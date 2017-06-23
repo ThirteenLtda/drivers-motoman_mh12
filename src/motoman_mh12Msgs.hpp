@@ -84,6 +84,14 @@ namespace motoman_mh12
         float accelerations[10];
     }__attribute__((packed));
   
+    struct MotionCtrlMsg
+    {
+        Prefix prefix;
+        int32_t robot_id;
+        int32_t sequence;
+        int32_t cmd;
+        float data[10];
+    }__attribute__((packed));
   }
 }
 #endif    
