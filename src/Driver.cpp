@@ -109,7 +109,7 @@ void Driver::parseJointFeedback(uint8_t const* buffer)
     
 }
 
-void Driver::parseMotionReply(uint8_t const* buffer, size_t size)
+void Driver::parseMotionReply(uint8_t const* buffer)
 {
     msgs::MotionReplyMsg const& msg = *reinterpret_cast<msgs::MotionReplyMsg const*>(buffer);
 }
@@ -154,6 +154,37 @@ void Driver::readJointFeedback(base::Time const& timeout)
             continue;
         else
             parseJointFeedback(&buffer[0]);
+            return;
+    }
+}
+
+
+
+void Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
+{
+    msgs::MotionCtrlMsg motion_ctrl;
+    motion_ctrl.prefix.length = 52;
+    motion_ctrl.prefix.msg_type = MotomanMsgTypes::MOTOMAN_MOTION_CTRL;
+    motion_ctrl.robot_id = int32_t(robot_id);
+    motion_ctrl.sequence = int32_t(sequence);
+    motion_ctrl.cmd = int32_t(cmd);
+    uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&motion_ctrl);
+    writePacket(buffer, motion_ctrl.prefix.length + 4);
+    readMotionCtrlReply(base::Time::fromSeconds(0.1));
+}
+
+void Driver::readMotionCtrlReply(const base::Time& timeout)
+{
+    base::Timeout deadline = base::Timeout(timeout);
+    
+    while(deadline.timeLeft().toMicroseconds() > .0)
+    {
+        int packet_size = readPacket(&buffer[0], 10000, deadline.timeLeft());
+        int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(&buffer[0]);
+        if(buffer_as_int32[1]!= MotomanMsgTypes::MOTOMAN_MOTION_REPLY)
+            continue;
+        else
+            parseMotionReply(&buffer[0]);
             return;
     }
 }
