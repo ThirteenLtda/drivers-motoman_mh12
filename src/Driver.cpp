@@ -3,6 +3,8 @@
 #include "motoman_mh12Msgs.hpp"
 #include <iostream>
 #include <string.h>
+#include <base/Time.hpp>
+#include <base/Timeout.hpp>
 
 using namespace motoman_mh12;
 Driver::Driver()
@@ -11,9 +13,8 @@ Driver::Driver()
 
 int Driver::read()
 {
-    uint8_t buffer[10000];
-    int packet_size = readPacket(buffer, 10000);
-    return parsePacket(buffer, packet_size);
+    int packet_size = readPacket(&buffer[0], 10000);
+    return parsePacket(&buffer[0], packet_size);
 }
 
 int Driver::returnMsgSize(int msg_type) const
@@ -45,11 +46,13 @@ int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
     
     if (expected_length == -1)
         return expected_length;
-    
-    if(length>=expected_length)
+    if(length!=expected_length)
+        return -1;
+    else 
+        if(buffer_size>=length)
         return expected_length;
-    else
-        return 0;
+        else
+            return 0;
     
 }
 
