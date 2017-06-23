@@ -62,7 +62,7 @@ int Driver::parsePacket(uint8_t const* buffer, size_t size)
             parseReadStatus(buffer,size);
             return MotomanMsgTypes::MOTOMAN_ROBOT_STATUS;
         case MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK:
-            parseJointFeedback(buffer,size);
+            parseJointFeedback(buffer);
             return MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK;
     }
 }
@@ -90,7 +90,7 @@ void Driver::parseReadStatus(uint8_t const* buffer, size_t size)
     status.motion_possible = interpret_tristate(msg.motion_possible);
 }
 
-void Driver::parseJointFeedback(uint8_t const* buffer, size_t size)
+void Driver::parseJointFeedback(uint8_t const* buffer)
 {
     int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(&buffer[4*4]);
     joint_feedback.robot_id = int(buffer_as_int32[1]);
@@ -117,4 +117,43 @@ void Driver::parseMotionReply(uint8_t const* buffer, size_t size)
 void Driver::parseReadSingleIOReply(uint8_t const* buffer, size_t size)
 {
     msgs::ReadSingleIoReplyMsg const& msg = *reinterpret_cast<msgs::ReadSingleIoReplyMsg const*>(buffer);
+}
+
+
+
+void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time timestamp,
+                                    std::vector<base::JointState> joint_states)
+{
+    msgs::JointTrajPTFullMsg joint_traj_cmd;
+    joint_traj_cmd.prefix.length = 46; 
+    joint_traj_cmd.prefix.msg_type = MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL;
+    joint_traj_cmd.robot_id = int32_t(robot_id);
+    joint_traj_cmd.sequence = int32_t(sequence);
+    joint_traj_cmd.time = timestamp.toSeconds();
+    for(size_t i=0; i<joint_states.size();i++)
+    {
+        joint_traj_cmd.positions[i] =  joint_states[i].position;
+        joint_traj_cmd.velocities[i] = joint_states[i].speed;
+        joint_traj_cmd.accelerations[i] = joint_states[i].acceleration;
+    }
+    
+    uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&joint_traj_cmd);
+    writePacket(buffer, joint_traj_cmd.prefix.length + 4);
+    readJointFeedback(base::Time::fromSeconds(0.1));
+}
+
+void Driver::readJointFeedback(base::Time const& timeout)
+{
+    base::Timeout deadline(timeout);
+    
+    while(deadline.timeLeft().toMicroseconds() > .0)
+    {
+        int packet_size = readPacket(&buffer[0], 10000, deadline.timeLeft());
+        int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(&buffer[0]);
+        if(buffer_as_int32[1]!= MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK)
+            continue;
+        else
+            parseJointFeedback(&buffer[0]);
+            return;
+    }
 }

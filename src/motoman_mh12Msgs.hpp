@@ -71,6 +71,18 @@ namespace motoman_mh12
       base::Time time; //timestamp associated with this trajectory point in seconds
       std::vector<base::JointState> joint_states;
     };
+    
+    struct JointTrajPTFullMsg
+    {
+        Prefix prefix;
+        int32_t robot_id;
+        int32_t sequence;
+        int32_t valid_field = 7; // MotoROS expects all values, so this value should be set to 7
+        float time;
+        float positions[10];
+        float velocities[10];
+        float accelerations[10];
+    }__attribute__((packed));
   
   }
 }
