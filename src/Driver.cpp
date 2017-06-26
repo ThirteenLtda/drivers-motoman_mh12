@@ -66,14 +66,13 @@ int Driver::parsePacket(uint8_t const* buffer, size_t size)
     switch(buffer_as_int32[1])
     {
         case MotomanMsgTypes::MOTOMAN_ROBOT_STATUS:
-            parseReadStatus(buffer,size);
+            status  = parseReadStatus(buffer,size);
             return MotomanMsgTypes::MOTOMAN_ROBOT_STATUS;
         case MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK:
-            parseJointFeedback(buffer);
+            joint_feedback = parseJointFeedback(buffer);
             return MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK;
     }
 }
-
 
 static bool interpret_tristate(int32_t flag)
 {
@@ -82,37 +81,42 @@ static bool interpret_tristate(int32_t flag)
     return bool(flag);
 }
 
-void Driver::parseReadStatus(uint8_t const* buffer, size_t size)
+msgs::MotomanStatus Driver::parseReadStatus(uint8_t const* buffer, size_t size) const
 {
     msgs::StatusMsg const& msg = *reinterpret_cast<msgs::StatusMsg const*>(buffer);
-    status.drives_powered = interpret_tristate(msg.drives_powered);
-    status.e_stopped = interpret_tristate(msg.e_stopped);
+    msgs::MotomanStatus motoman_status;
+    motoman_status.drives_powered = interpret_tristate(msg.drives_powered);
+    motoman_status.e_stopped = interpret_tristate(msg.e_stopped);
     if(msg.error_code == -1)
         throw std::runtime_error("alarms in unkown state");
     else
-        status.error_code = int(msg.error_code);
-    status.ln_error = interpret_tristate(msg.ln_error);
-    status.ln_motion = interpret_tristate(msg.ln_motion);
-    status.mode = interpret_tristate(msg.mode);
-    status.motion_possible = interpret_tristate(msg.motion_possible);
+        motoman_status.error_code = int(msg.error_code);
+    motoman_status.ln_error = interpret_tristate(msg.ln_error);
+    motoman_status.ln_motion = interpret_tristate(msg.ln_motion);
+    motoman_status.mode = interpret_tristate(msg.mode);
+    motoman_status.motion_possible = interpret_tristate(msg.motion_possible);
+    return motoman_status;
 }
 
-void Driver::parseJointFeedback(uint8_t const* buffer)
+msgs::MotomanJointFeedback Driver::parseJointFeedback(uint8_t const* buffer) const
 {
     int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(&buffer[4*4]);
-    joint_feedback.robot_id = int(buffer_as_int32[1]);
-    joint_feedback.valid_field = int(buffer_as_int32[3]);
-    if(joint_feedback.valid_field !=2)
+    msgs::MotomanJointFeedback parsed_joint_feedback;
+    parsed_joint_feedback.robot_id = int(buffer_as_int32[1]);
+    parsed_joint_feedback.valid_field = int(buffer_as_int32[3]);
+    if(parsed_joint_feedback.valid_field !=2)
         throw std::runtime_error("Bit-masking of valid field inconsistent");
     
     float const* buffer_as_float = reinterpret_cast<float const*>(&buffer_as_int32[2]);
-    joint_feedback.time.fromSeconds(buffer_as_float[0]);
+    parsed_joint_feedback.time.fromSeconds(buffer_as_float[0]);
     for(int i = 0; i<10; i++)
     {
         base::JointState joint_state;
         joint_state.position = double(buffer_as_float[1+i]);
-        joint_feedback.joint_states.push_back(joint_state);
+        parsed_joint_feedback.joint_states.push_back(joint_state);
     }
+    
+    return parsed_joint_feedback;
     
 }
 
@@ -125,8 +129,6 @@ void Driver::parseReadSingleIOReply(uint8_t const* buffer, size_t size)
 {
     msgs::ReadSingleIoReplyMsg const& msg = *reinterpret_cast<msgs::ReadSingleIoReplyMsg const*>(buffer);
 }
-
-
 
 void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time timestamp,
                                     std::vector<base::JointState> joint_states)
@@ -164,8 +166,6 @@ void Driver::readJointFeedback(base::Time const& timeout)
             return;
     }
 }
-
-
 
 void Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
 {
