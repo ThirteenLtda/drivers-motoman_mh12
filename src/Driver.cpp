@@ -40,6 +40,10 @@ int Driver::returnMsgSize(int msg_type) const
 int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
 {
     int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(buffer);
+    
+    if(buffer_size < 2)
+        return 0;
+    
     int length = buffer_as_int32[0];
     int msg_type = buffer_as_int32[1];
     int expected_length = returnMsgSize(msg_type);
