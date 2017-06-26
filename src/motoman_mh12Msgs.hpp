@@ -43,6 +43,12 @@ namespace motoman_mh12
         int32_t result;
     }__attribute__((packed));
     
+    struct ReadSingleIoMsg
+    {
+        Prefix prefix;
+        int32_t address;
+    }__attribute__((packed));
+    
     struct ReadSingleIoReplyMsg
     {
         Prefix prefix;
@@ -92,6 +98,10 @@ namespace motoman_mh12
         int32_t cmd;
         float data[10];
     }__attribute__((packed));
+    
+ 
   }
+ 
+ 
 }
 #endif    
