@@ -20,8 +20,8 @@ namespace motoman_mh12
         
         int returnMsgSize(int msg_type) const;
         int parsePacket(uint8_t const* buffer, size_t size);
-        void parseReadStatus(uint8_t const* buffer, size_t size);
-        void parseJointFeedback(uint8_t const* buffer);
+        msgs::MotomanStatus parseReadStatus(uint8_t const* buffer, size_t size) const;
+        msgs::MotomanJointFeedback parseJointFeedback(uint8_t const* buffer) const;
         void parseMotionReply(uint8_t const* buffer);
         void parseReadSingleIOReply(uint8_t const* buffer, size_t size);
         
