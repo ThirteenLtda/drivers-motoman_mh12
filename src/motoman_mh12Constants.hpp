@@ -132,7 +132,8 @@ namespace motoman_mh12
             MOTOMAN_JOINT_FEEDBACK_SIZE = 136,
             MOTOMAN_MOTION_REPLY_SIZE = 20,
             MOTOMAN_READ_SINGLE_IO_REPLY_SIZE = 12,
-            MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE = 8
+            MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE = 8,
+            MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE
         };
         
         typedef MotomanMsgTypes::MotomanMsgType MotomanMsgType;
