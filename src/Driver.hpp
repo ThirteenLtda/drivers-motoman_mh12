@@ -36,9 +36,9 @@ namespace motoman_mh12
         void parseReadSingleIOReply(uint8_t const* buffer);
 
         
-        void sendWriteSingleIo(int IOaddress, int value);
-        void readWriteSingleIO(const base::Time& timeout);
-        void parseWriteSingleIOReply(uint8_t const* buffer);
+        bool sendWriteSingleIo(int IOaddress, int value);
+        bool readWriteSingleIO(const base::Time& timeout);
+        bool parseWriteSingleIOReply(uint8_t const* buffer) const;
 
         
         msgs::MotomanStatus status;
