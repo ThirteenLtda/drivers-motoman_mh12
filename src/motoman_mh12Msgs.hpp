@@ -56,6 +56,20 @@ namespace motoman_mh12
         int32_t result_code; //High level command resul code: 1=SUCCESS 2= FAILURE
     }__attribute__((packed));
     
+    
+    struct WriteSingleIoMsg
+    {
+     Prefix prefix;
+     int32_t io_address;
+     int32_t value;
+    }__attribute__((packed));
+    
+    struct WriteSingleIoReplyMsg
+    {
+        Prefix prefix;
+        int32_t result_code;
+    }__attribute__((packed));
+    
     struct MotomanStatus
     {
       //encanpsulation of the message excluding the unknown states, if there is the need we can implement it later    

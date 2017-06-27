@@ -194,7 +194,7 @@ void Driver::readMotionCtrlReply(const base::Time& timeout)
         parseMotionReply(&buffer[0]);
 }
 
-void Driver::queryReadSingleIO(int IOaddress)
+void Driver::sendReadSingleIO(int IOaddress)
 {
     msgs::ReadSingleIoMsg read_single_io;
     read_single_io.prefix.length = 8;
@@ -211,3 +211,25 @@ void Driver::readSingleIOReply(const base::Time& timeout)
         parseReadSingleIOReply(&buffer[0]);
 }
 
+void Driver::sendWriteSingleIo(int IOaddress, int value)
+{
+    msgs::WriteSingleIoMsg write_single_io;
+    write_single_io.prefix.length = 0;
+    write_single_io.prefix.msg_type = MotomanMsgTypes:: MOTOMAN_WRITE_SINGLE_IO;
+    write_single_io.io_address = IOaddress;
+    write_single_io.value = value;
+    uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&write_single_io);
+    writePacket(buffer,write_single_io.prefix.length + 4);
+    readWriteSingleIO(base::Time::fromSeconds(0.1));
+};
+
+void Driver::readWriteSingleIO(const base::Time& timeout)
+{
+    if(waitForReply(timeout, MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY))
+        parseWriteSingleIOReply(&buffer[0]);
+}
+
+void Driver::parseWriteSingleIOReply(uint8_t const* buffer)
+{
+    msgs::WriteSingleIoReplyMsg const& msg = *reinterpret_cast<msgs::WriteSingleIoReplyMsg const*>(buffer);
+}
