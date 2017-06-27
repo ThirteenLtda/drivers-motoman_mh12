@@ -107,6 +107,15 @@ namespace motoman_mh12
         }  // MotionReplySubcodes
     }
     
+    namespace write_single_io
+    {
+        enum ResultCode
+        {
+            SUCCESS = 1,
+            FAILURE =2
+        };
+    }
+    
     namespace MotomanMsgTypes
     {
         enum MotomanMsgType

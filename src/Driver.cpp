@@ -126,11 +126,6 @@ void Driver::parseMotionReply(uint8_t const* buffer)
     
 }
 
-void Driver::parseReadSingleIOReply(uint8_t const* buffer)
-{
-    msgs::ReadSingleIoReplyMsg const& msg = *reinterpret_cast<msgs::ReadSingleIoReplyMsg const*>(buffer);
-}
-
 void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time timestamp,
                                     std::vector<base::JointState> joint_states)
 {
@@ -195,6 +190,11 @@ void Driver::readMotionCtrlReply(const base::Time& timeout)
         parseMotionReply(&buffer[0]);
 }
 
+void Driver::parseReadSingleIOReply(uint8_t const* buffer)
+{
+    msgs::ReadSingleIoReplyMsg const& msg = *reinterpret_cast<msgs::ReadSingleIoReplyMsg const*>(buffer);
+}
+
 void Driver::sendReadSingleIO(int IOaddress)
 {
     msgs::ReadSingleIoMsg read_single_io;
@@ -212,7 +212,7 @@ void Driver::readSingleIOReply(const base::Time& timeout)
         parseReadSingleIOReply(&buffer[0]);
 }
 
-void Driver::sendWriteSingleIo(int IOaddress, int value)
+bool Driver::sendWriteSingleIo(int IOaddress, int value)
 {
     msgs::WriteSingleIoMsg write_single_io;
     write_single_io.prefix.length = 0;
@@ -221,16 +221,21 @@ void Driver::sendWriteSingleIo(int IOaddress, int value)
     write_single_io.value = value;
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&write_single_io);
     writePacket(buffer,write_single_io.prefix.length + 4);
-    readWriteSingleIO(base::Time::fromSeconds(0.1));
+    return readWriteSingleIO(base::Time::fromSeconds(0.1));
 };
 
-void Driver::readWriteSingleIO(const base::Time& timeout)
+bool Driver::readWriteSingleIO(const base::Time& timeout)
 {
     if(waitForReply(timeout, MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY))
-        parseWriteSingleIOReply(&buffer[0]);
+        return parseWriteSingleIOReply(&buffer[0]);
 }
 
-void Driver::parseWriteSingleIOReply(uint8_t const* buffer)
+bool Driver::parseWriteSingleIOReply(uint8_t const* buffer) const
 {
     msgs::WriteSingleIoReplyMsg const& msg = *reinterpret_cast<msgs::WriteSingleIoReplyMsg const*>(buffer);
+    if(msg.result_code == write_single_io::SUCCESS)
+        return true;
+    else
+        return false;
+    
 }
