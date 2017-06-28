@@ -22,23 +22,25 @@ namespace motoman_mh12
         int parsePacket(uint8_t const* buffer, size_t size);
         msgs::MotomanStatus parseReadStatus(uint8_t const* buffer, size_t size) const;
         msgs::MotomanJointFeedback parseJointFeedback(uint8_t const* buffer) const;
-        void parseMotionReply(uint8_t const* buffer);
+        
+        
         bool waitForReply(base::Time const& timeout, int32_t msg_type);
         void sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time timestamp,
                                     std::vector<base::JointState> joint_states);
         
-        void sendMotionCtrl(int robot_id, int sequence, int cmd);
-        void readMotionCtrlReply(base::Time const& timeout);
+        msgs::MotionReply sendMotionCtrl(int robot_id, int sequence, int cmd);
+        msgs::MotionReply readMotionCtrlReply(base::Time const& timeout);
+        msgs::MotionReply parseMotionReply(uint8_t const* buffer);
         
         void sendReadSingleIO(int IOaddress);
         void readSingleIOReply(const base::Time& timeout);
         void parseReadSingleIOReply(uint8_t const* buffer);
-
+        
         
         bool sendWriteSingleIo(int IOaddress, int value);
         bool readWriteSingleIO(const base::Time& timeout);
         bool parseWriteSingleIOReply(uint8_t const* buffer) const;
-
+        
         
         msgs::MotomanStatus status;
         msgs::MotomanJointFeedback joint_feedback;
