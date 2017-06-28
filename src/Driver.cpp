@@ -56,12 +56,12 @@ int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
     
     if(length != expected_length)
         return LENGTH_UNKNOWN;
-    else 
-        if(buffer_size>=length)
-            return expected_length;
-        else
-            return 0;
-        
+    
+    if(buffer_size>=length)
+        return expected_length;
+    else
+        return 0;
+    
 }
 
 MotomanMsgTypes::MotomanMsgType Driver::parsePacket(uint8_t const* buffer, size_t size)
@@ -185,7 +185,7 @@ msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
 msgs::MotionReply Driver::readMotionCtrlReply(const base::Time& timeout)
 {
     waitForReply(timeout,MotomanMsgTypes::MOTOMAN_MOTION_REPLY);
-        return parseMotionReply(&buffer[0]);
+    return parseMotionReply(&buffer[0]);
 }
 
 void Driver::parseReadSingleIOReply(uint8_t const* buffer)
@@ -207,7 +207,7 @@ void Driver::sendReadSingleIO(int IOaddress)
 void Driver::readSingleIOReply(const base::Time& timeout)
 {
     waitForReply(timeout, MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY);
-        parseReadSingleIOReply(&buffer[0]);
+    parseReadSingleIOReply(&buffer[0]);
 }
 
 bool Driver::sendWriteSingleIo(int IOaddress, int value)
@@ -225,7 +225,7 @@ bool Driver::sendWriteSingleIo(int IOaddress, int value)
 bool Driver::readWriteSingleIO(const base::Time& timeout)
 {
     waitForReply(timeout, MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY);
-        return parseWriteSingleIOReply(&buffer[0]);
+    return parseWriteSingleIOReply(&buffer[0]);
 }
 
 bool Driver::parseWriteSingleIOReply(uint8_t const* buffer) const
