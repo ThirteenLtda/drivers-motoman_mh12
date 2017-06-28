@@ -43,6 +43,14 @@ namespace motoman_mh12
         int32_t result;
     }__attribute__((packed));
     
+    struct MotionReply
+    {
+        int robot_id;
+        int sequence;
+        int command;
+        int result;
+    };
+    
     struct ReadSingleIoMsg
     {
         Prefix prefix;
