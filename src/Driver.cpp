@@ -152,7 +152,7 @@ void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time times
     writePacket(buffer, joint_traj_cmd.prefix.length + 4);
 }
 
-bool Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
+void Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
 {
     base::Timeout deadline(timeout);
     
@@ -160,12 +160,10 @@ bool Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
     {
         int packet_size = readPacket(&buffer[0], 10000, deadline.timeLeft());
         int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(&buffer[0]);
-        if(buffer_as_int32[1]!= msg_type)
-            continue;
-        else
-            return true;
+        if(buffer_as_int32[1]== msg_type)
+            return;
     }
-    return false;
+    throw std::runtime_error("timeout reached and no reply received");
 }
 
 msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
@@ -183,7 +181,7 @@ msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
 
 msgs::MotionReply Driver::readMotionCtrlReply(const base::Time& timeout)
 {
-    if(waitForReply(timeout,MotomanMsgTypes::MOTOMAN_MOTION_REPLY))
+    waitForReply(timeout,MotomanMsgTypes::MOTOMAN_MOTION_REPLY);
         return parseMotionReply(&buffer[0]);
 }
 
@@ -205,7 +203,7 @@ void Driver::sendReadSingleIO(int IOaddress)
 
 void Driver::readSingleIOReply(const base::Time& timeout)
 {
-    if(waitForReply(timeout, MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY))
+    waitForReply(timeout, MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY);
         parseReadSingleIOReply(&buffer[0]);
 }
 
@@ -223,7 +221,7 @@ bool Driver::sendWriteSingleIo(int IOaddress, int value)
 
 bool Driver::readWriteSingleIO(const base::Time& timeout)
 {
-    if(waitForReply(timeout, MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY))
+    waitForReply(timeout, MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY);
         return parseWriteSingleIOReply(&buffer[0]);
 }
 
