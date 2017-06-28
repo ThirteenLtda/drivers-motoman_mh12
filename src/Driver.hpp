@@ -4,6 +4,7 @@
 
 #include <iodrivers_base/Driver.hpp>
 #include "motoman_mh12Msgs.hpp"
+#include "motoman_mh12Constants.hpp"
 
 namespace motoman_mh12
 {
@@ -14,12 +15,12 @@ namespace motoman_mh12
     public:
         Driver();
         /** Read available packets on the I/O */
-        int read();
+        MotomanMsgTypes::MotomanMsgType read();
         
         int extractPacket (uint8_t const *buffer, size_t buffer_size) const;
         
         int returnMsgSize(int msg_type) const;
-        int parsePacket(uint8_t const* buffer, size_t size);
+        MotomanMsgTypes::MotomanMsgType parsePacket(uint8_t const* buffer, size_t size);
         msgs::MotomanStatus parseReadStatus(uint8_t const* buffer, size_t size) const;
         msgs::MotomanJointFeedback parseJointFeedback(uint8_t const* buffer) const;
         
