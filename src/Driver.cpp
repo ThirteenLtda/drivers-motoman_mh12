@@ -120,9 +120,15 @@ msgs::MotomanJointFeedback Driver::parseJointFeedback(uint8_t const* buffer) con
     return parsed_joint_feedback;
 }
 
-void Driver::parseMotionReply(uint8_t const* buffer)
+msgs::MotionReply Driver::parseMotionReply(uint8_t const* buffer)
 {
     msgs::MotionReplyMsg const& msg = *reinterpret_cast<msgs::MotionReplyMsg const*>(buffer);
+    msgs::MotionReply motion_reply;
+    motion_reply.robot_id = msg.robot_id;
+    motion_reply.sequence = msg.sequence;
+    motion_reply.command = msg.command;
+    motion_reply.result = msg.result;
+    return motion_reply;
     
 }
 
@@ -162,7 +168,7 @@ bool Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
     return false;
 }
 
-void Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
+msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
 {
     msgs::MotionCtrlMsg motion_ctrl;
     motion_ctrl.prefix.length = 52;
@@ -172,13 +178,13 @@ void Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
     motion_ctrl.cmd = int32_t(cmd);
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&motion_ctrl);
     writePacket(buffer, motion_ctrl.prefix.length + 4);
-    readMotionCtrlReply(base::Time::fromSeconds(0.1));
+    return readMotionCtrlReply(base::Time::fromSeconds(0.1));
 }
 
-void Driver::readMotionCtrlReply(const base::Time& timeout)
+msgs::MotionReply Driver::readMotionCtrlReply(const base::Time& timeout)
 {
     if(waitForReply(timeout,MotomanMsgTypes::MOTOMAN_MOTION_REPLY))
-        parseMotionReply(&buffer[0]);
+        return parseMotionReply(&buffer[0]);
 }
 
 void Driver::parseReadSingleIOReply(uint8_t const* buffer)
