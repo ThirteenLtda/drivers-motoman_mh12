@@ -168,7 +168,7 @@ bool Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
 void Driver::readJointFeedback(base::Time const& timeout)
 {
     if(waitForReply(timeout,MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK))
-        parseJointFeedback(&buffer[0]);
+        joint_feedback = parseJointFeedback(&buffer[0]);
 }
 
 void Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
