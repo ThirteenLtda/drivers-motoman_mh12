@@ -135,7 +135,7 @@ void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time times
     joint_traj_cmd.robot_id = int32_t(robot_id);
     joint_traj_cmd.sequence = int32_t(sequence);
     joint_traj_cmd.time = timestamp.toSeconds();
-    for(int i=0; i<joint_states.size();i++)
+    for(size_t i=0; i<joint_states.size();i++)
     {
         joint_traj_cmd.positions[i] =  joint_states[i].position;
         joint_traj_cmd.velocities[i] = joint_states[i].speed;
