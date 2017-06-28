@@ -7,6 +7,9 @@
 #include <base/Timeout.hpp>
 
 using namespace motoman_mh12;
+
+static const int LENGTH_UNKNOWN = -1;
+
 Driver::Driver()
 : iodrivers_base::Driver(10000) {}
 // The count above is the maximum packet size
@@ -32,7 +35,7 @@ int Driver::returnMsgSize(int msg_type) const
         case MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY:
             return MotomanMsgTypes::MOTOMAN_HEADER_MSG_SIZE + MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE;
         default:
-            return -1;
+            return LENGTH_UNKNOWN;
     }
 }
 
@@ -48,10 +51,8 @@ int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
     int msg_type = buffer_as_int32[1];
     int expected_length = returnMsgSize(msg_type);
     
-    if (expected_length == -1)
-        return expected_length;
-    if(length!=expected_length)
-        return -1;
+    if(length != expected_length)
+        return LENGTH_UNKNOWN;
     else 
         if(buffer_size>=length)
             return expected_length;
