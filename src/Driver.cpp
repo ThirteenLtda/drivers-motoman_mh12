@@ -144,7 +144,6 @@ void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time times
     
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&joint_traj_cmd);
     writePacket(buffer, joint_traj_cmd.prefix.length + 4);
-    readJointFeedback(base::Time::fromSeconds(0.1));
 }
 
 bool Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
