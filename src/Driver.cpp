@@ -151,7 +151,7 @@ bool Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
 {
     base::Timeout deadline = base::Timeout(timeout);
     
-    while(deadline.timeLeft().toMicroseconds() > .0)
+    while(!deadline.elapsed())
     {
         int packet_size = readPacket(&buffer[0], 10000, deadline.timeLeft());
         if(packet_size != returnMsgSize(msg_type))
