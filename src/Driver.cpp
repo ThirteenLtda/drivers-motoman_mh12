@@ -41,7 +41,7 @@ int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
 {
     int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(buffer);
     
-    if(buffer_size < 2)
+    if(buffer_size < sizeof(int32_t)*2)
         return 0;
     
     int length = buffer_as_int32[0];
@@ -117,7 +117,6 @@ msgs::MotomanJointFeedback Driver::parseJointFeedback(uint8_t const* buffer) con
     }
     
     return parsed_joint_feedback;
-    
 }
 
 void Driver::parseMotionReply(uint8_t const* buffer)
@@ -237,5 +236,4 @@ bool Driver::parseWriteSingleIOReply(uint8_t const* buffer) const
         return true;
     else
         return false;
-    
 }
