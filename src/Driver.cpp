@@ -181,7 +181,7 @@ msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
 
 msgs::MotionReply Driver::readMotionCtrlReply(const base::Time& timeout)
 {
-    if(waitForReply(timeout,MotomanMsgTypes::MOTOMAN_MOTION_REPLY))
+    waitForReply(timeout,MotomanMsgTypes::MOTOMAN_MOTION_REPLY);
         return parseMotionReply(&buffer[0]);
 }
 
@@ -203,7 +203,7 @@ void Driver::sendReadSingleIO(int IOaddress)
 
 void Driver::readSingleIOReply(const base::Time& timeout)
 {
-    if(waitForReply(timeout, MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY))
+    waitForReply(timeout, MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY);
         parseReadSingleIOReply(&buffer[0]);
 }
 
@@ -221,7 +221,7 @@ bool Driver::sendWriteSingleIo(int IOaddress, int value)
 
 bool Driver::readWriteSingleIO(const base::Time& timeout)
 {
-    if(waitForReply(timeout, MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY))
+    waitForReply(timeout, MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY);
         return parseWriteSingleIOReply(&buffer[0]);
 }
 
