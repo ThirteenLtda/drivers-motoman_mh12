@@ -11,12 +11,15 @@ using namespace motoman_mh12;
 static const int LENGTH_UNKNOWN = -1;
 
 Driver::Driver()
-: iodrivers_base::Driver(10000) {}
+: iodrivers_base::Driver(10000) 
+{
+    buffer.resize(10000);
+}
 // The count above is the maximum packet size
 
 MotomanMsgTypes::MotomanMsgType Driver::read()
 {
-    int packet_size = readPacket(&buffer[0], 10000);
+    int packet_size = readPacket(&buffer[0], buffer.size());
     return parsePacket(&buffer[0], packet_size);
 }
 
@@ -158,7 +161,7 @@ void Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
     
     while(!deadline.elapsed())
     {
-        int packet_size = readPacket(&buffer[0], 10000, deadline.timeLeft());
+        int packet_size = readPacket(&buffer[0], buffer.size(), deadline.timeLeft());
         int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(&buffer[0]);
         if(buffer_as_int32[1]== msg_type)
             return;
