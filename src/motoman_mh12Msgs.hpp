@@ -2,7 +2,6 @@
 #define MOTOMAN_MH12_MESSAGES_HPP
 
 #include <stdint.h>
-#include <boost/
 #include <vector>
 #include <base/Time.hpp>
 #include <base/JointState.hpp>
