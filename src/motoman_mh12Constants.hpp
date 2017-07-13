@@ -115,7 +115,9 @@ namespace motoman_mh12
             FAILURE =2
         };
     }
-    
+    /*
+    * \brief Enumeration of the Msg Types, i.e pkg headers, codes
+    */ 
     namespace MotomanMsgTypes
     {
         enum MotomanMsgType
@@ -134,15 +136,19 @@ namespace motoman_mh12
             ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017 //Similar to Dynamic Joint State on the REP I0001
         };
         
+        /* 
+        * \brief Enumeration of the expected message size from each message type, excluding the prefix
+	*/
         enum MotomanMsgSize
         {
-            MOTOMAN_HEADER_MSG_SIZE = 12,
+            MOTOMAN_PREFIX_MSG_SIZE = 12,
             MOTOMAN_ROBOT_STATUS_SIZE = 35,
             MOTOMAN_JOINT_FEEDBACK_SIZE = 136,
             MOTOMAN_MOTION_REPLY_SIZE = 20,
             MOTOMAN_READ_SINGLE_IO_REPLY_SIZE = 12,
             MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE = 8,
-            MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE
+            MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE = 136,
+            MOTOMAN_MAX_PKT_SIZE = 136+12
         };
         
         typedef MotomanMsgTypes::MotomanMsgType MotomanMsgType;

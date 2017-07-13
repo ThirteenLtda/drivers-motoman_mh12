@@ -11,9 +11,9 @@ using namespace motoman_mh12;
 static const int LENGTH_UNKNOWN = -1;
 
 Driver::Driver()
-: iodrivers_base::Driver(10000) 
+: iodrivers_base::Driver(10*MotomanMsgTypes::MOTOMAN_MAX_PKT_SIZE) 
 {
-    buffer.resize(10000);
+    buffer.resize(10*MotomanMsgTypes::MOTOMAN_MAX_PKT_SIZE);
 }
 // The count above is the maximum packet size
 
@@ -23,24 +23,34 @@ MotomanMsgTypes::MotomanMsgType Driver::read()
     return parsePacket(&buffer[0], packet_size);
 }
 
+/*
+* Returns the expected packet size given a message type, if there is
+* no match, it return -1 to move the buffer pointer
+* @param msg_type Message type from the header
+*/
 int Driver::returnMsgSize(int msg_type) const
 {
     switch(msg_type)
     {
         case MotomanMsgTypes::MOTOMAN_ROBOT_STATUS:
-            return MotomanMsgTypes::MOTOMAN_HEADER_MSG_SIZE + MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE;
+            return MotomanMsgTypes::MOTOMAN_PREFIX_MSG_SIZE 
+			+ MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE;
         case MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK:
-            return MotomanMsgTypes::MOTOMAN_HEADER_MSG_SIZE + MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK_SIZE;
+            return MotomanMsgTypes::MOTOMAN_PREFIX_MSG_SIZE 
+			+ MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK_SIZE;
         case MotomanMsgTypes::MOTOMAN_MOTION_REPLY:
-            return MotomanMsgTypes::MOTOMAN_HEADER_MSG_SIZE + MotomanMsgTypes::MOTOMAN_MOTION_REPLY_SIZE;
+            return MotomanMsgTypes::MOTOMAN_PREFIX_MSG_SIZE 
+			+ MotomanMsgTypes::MOTOMAN_MOTION_REPLY_SIZE;
         case MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY:
-            return MotomanMsgTypes::MOTOMAN_HEADER_MSG_SIZE + MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE;
+            return MotomanMsgTypes::MOTOMAN_PREFIX_MSG_SIZE 
+			+ MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE;
         case MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY:
-            return MotomanMsgTypes::MOTOMAN_HEADER_MSG_SIZE + MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE;
+            return MotomanMsgTypes::MOTOMAN_PREFIX_MSG_SIZE 
+			+ MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE;
         default:
             return LENGTH_UNKNOWN;
     }
-}
+	}
 
 
 int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
@@ -78,6 +88,10 @@ MotomanMsgTypes::MotomanMsgType Driver::parsePacket(uint8_t const* buffer, size_
     }
 }
 
+/*
+* Interpret the tristate 1 = TRUE, 0 = FALSE and -1=Unknown as a boolend and
+* it was adopted the convention to always throw if any unknown state is received
+*/
 static bool interpret_tristate(int32_t flag)
 {
     if(flag == -1)
@@ -91,6 +105,7 @@ msgs::MotomanStatus Driver::parseReadStatus(uint8_t const* buffer, size_t size) 
     msgs::MotomanStatus motoman_status;
     motoman_status.drives_powered = interpret_tristate(msg.drives_powered);
     motoman_status.e_stopped = interpret_tristate(msg.e_stopped);
+    // it was adopted the convention to always throw if any unknown state is received
     if(msg.error_code == -1)
         throw std::runtime_error("alarms in unkown state");
     else
@@ -108,6 +123,8 @@ msgs::MotomanJointFeedback Driver::parseJointFeedback(uint8_t const* buffer) con
     msgs::MotomanJointFeedback parsed_joint_feedback;
     parsed_joint_feedback.robot_id = int(buffer_as_int32[1]);
     parsed_joint_feedback.valid_field = int(buffer_as_int32[3]);
+    //The MotoROS driver send only the position, so the bit masking of the valid fields
+    //must be always 2.
     if(parsed_joint_feedback.valid_field !=2)
         throw std::runtime_error("Bit-masking of valid fields inconsistent");
     
@@ -136,7 +153,7 @@ msgs::MotionReply Driver::parseMotionReply(uint8_t const* buffer)
 }
 
 void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time timestamp,
-                                    std::vector<base::JointState> joint_states)
+                                    std::vector<base::JointState> const& joint_states)
 {
     msgs::JointTrajPTFullMsg joint_traj_cmd;
     joint_traj_cmd.prefix.length = 46; 
