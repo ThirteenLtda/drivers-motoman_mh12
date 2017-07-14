@@ -148,6 +148,9 @@ namespace motoman_mh12
             MOTOMAN_READ_SINGLE_IO_REPLY_SIZE = sizeof(msgs::ReadSingleIoReplyMsg),
             MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE = sizeof(msgs::WriteSingleIoReplyMsg),
             MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE = sizeof(msgs::JointTrajPTFullMsg),
+            MOTOMAN_MOTION_CTRL_SIZE = sizeof(msgs::MotionCtrlMsg),
+            MOTOMAN_READ_SINGLE_IO_SIZE = sizeof(msgs::ReadSingleIoMsg),
+            MOTOMAN_WRITE_SINGLE_IO_SIZE = sizeof(msgs::WriteSingleIoMsg),
             MOTOMAN_MAX_PKT_SIZE = 136+12
         };
         

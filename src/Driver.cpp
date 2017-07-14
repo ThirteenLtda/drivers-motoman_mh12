@@ -151,7 +151,7 @@ void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time times
                                     std::vector<base::JointState> const& joint_states)
 {
     msgs::JointTrajPTFullMsg joint_traj_cmd;
-    joint_traj_cmd.prefix.length = 46; 
+    joint_traj_cmd.prefix.length = MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE; 
     joint_traj_cmd.prefix.msg_type = MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL;
     joint_traj_cmd.robot_id = int32_t(robot_id);
     joint_traj_cmd.sequence = int32_t(sequence);
@@ -184,7 +184,7 @@ void Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
 msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
 {
     msgs::MotionCtrlMsg motion_ctrl;
-    motion_ctrl.prefix.length = 52;
+    motion_ctrl.prefix.length = MotomanMsgTypes::MOTOMAN_MOTION_CTRL_SIZE;
     motion_ctrl.prefix.msg_type = MotomanMsgTypes::MOTOMAN_MOTION_CTRL;
     motion_ctrl.robot_id = int32_t(robot_id);
     motion_ctrl.sequence = int32_t(sequence);
@@ -208,7 +208,7 @@ void Driver::parseReadSingleIOReply(uint8_t const* buffer)
 void Driver::sendReadSingleIO(int IOaddress)
 {
     msgs::ReadSingleIoMsg read_single_io;
-    read_single_io.prefix.length = 8;
+    read_single_io.prefix.length = MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_SIZE;
     read_single_io.prefix.msg_type = MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO;
     read_single_io.address = IOaddress;
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&read_single_io);
@@ -225,7 +225,7 @@ void Driver::readSingleIOReply(const base::Time& timeout)
 bool Driver::sendWriteSingleIo(int IOaddress, int value)
 {
     msgs::WriteSingleIoMsg write_single_io;
-    write_single_io.prefix.length = 0;
+    write_single_io.prefix.length = MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_SIZE;
     write_single_io.prefix.msg_type = MotomanMsgTypes:: MOTOMAN_WRITE_SINGLE_IO;
     write_single_io.io_address = IOaddress;
     write_single_io.value = value;

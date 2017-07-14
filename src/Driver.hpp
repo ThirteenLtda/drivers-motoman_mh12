@@ -39,7 +39,6 @@ namespace motoman_mh12
         
         
         bool sendWriteSingleIo(int IOaddress, int value);
-        bool readWriteSingleIO(const base::Time& timeout);
         bool parseWriteSingleIOReply(uint8_t const* buffer) const;
         
         
