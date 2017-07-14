@@ -60,7 +60,7 @@ int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
     int expected_length = returnMsgSize(msg_type);
     
     if(length != expected_length)
-        return LENGTH_UNKNOWN;
+        return -1;
     
     if(buffer_size>=length)
         return expected_length;
@@ -151,7 +151,7 @@ void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time times
                                     std::vector<base::JointState> const& joint_states)
 {
     msgs::JointTrajPTFullMsg joint_traj_cmd;
-    joint_traj_cmd.prefix.length = 46; 
+    joint_traj_cmd.prefix.length = MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE; 
     joint_traj_cmd.prefix.msg_type = MotomanMsgTypes::MOTOMAN_JOINT_TRAJ_PT_FULL;
     joint_traj_cmd.robot_id = int32_t(robot_id);
     joint_traj_cmd.sequence = int32_t(sequence);
@@ -169,7 +169,7 @@ void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time times
 
 void Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
 {
-    base::Timeout deadline = base::Timeout(timeout);
+    base::Timeout deadline(timeout);
     
     while(!deadline.elapsed())
     {
@@ -184,7 +184,7 @@ void Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
 msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
 {
     msgs::MotionCtrlMsg motion_ctrl;
-    motion_ctrl.prefix.length = 52;
+    motion_ctrl.prefix.length = MotomanMsgTypes::MOTOMAN_MOTION_CTRL_SIZE;
     motion_ctrl.prefix.msg_type = MotomanMsgTypes::MOTOMAN_MOTION_CTRL;
     motion_ctrl.robot_id = int32_t(robot_id);
     motion_ctrl.sequence = int32_t(sequence);
@@ -208,7 +208,7 @@ void Driver::parseReadSingleIOReply(uint8_t const* buffer)
 void Driver::sendReadSingleIO(int IOaddress)
 {
     msgs::ReadSingleIoMsg read_single_io;
-    read_single_io.prefix.length = 8;
+    read_single_io.prefix.length = MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_SIZE;
     read_single_io.prefix.msg_type = MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO;
     read_single_io.address = IOaddress;
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&read_single_io);
@@ -225,26 +225,17 @@ void Driver::readSingleIOReply(const base::Time& timeout)
 bool Driver::sendWriteSingleIo(int IOaddress, int value)
 {
     msgs::WriteSingleIoMsg write_single_io;
-    write_single_io.prefix.length = 0;
+    write_single_io.prefix.length = MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_SIZE;
     write_single_io.prefix.msg_type = MotomanMsgTypes:: MOTOMAN_WRITE_SINGLE_IO;
     write_single_io.io_address = IOaddress;
     write_single_io.value = value;
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&write_single_io);
-    writePacket(buffer,write_single_io.prefix.length + 4);
-    return readWriteSingleIO(base::Time::fromSeconds(0.1));
+    waitForReply(base::Time::fromSeconds(0.1), MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY);
+    return parseWriteSingleIOReply(&buffer[0]);writePacket(buffer,write_single_io.prefix.length + 4);
 };
-
-bool Driver::readWriteSingleIO(const base::Time& timeout)
-{
-    waitForReply(timeout, MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY);
-    return parseWriteSingleIOReply(&buffer[0]);
-}
 
 bool Driver::parseWriteSingleIOReply(uint8_t const* buffer) const
 {
     msgs::WriteSingleIoReplyMsg const& msg = *reinterpret_cast<msgs::WriteSingleIoReplyMsg const*>(buffer);
-    if(msg.result_code == write_single_io::SUCCESS)
-        return true;
-    else
-        return false;
+    return (msg.result_code == write_single_io::SUCCESS);
 }
