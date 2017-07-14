@@ -60,7 +60,7 @@ int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
     int expected_length = returnMsgSize(msg_type);
     
     if(length != expected_length)
-        return LENGTH_UNKNOWN;
+        return -1;
     
     if(buffer_size>=length)
         return expected_length;
