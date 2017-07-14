@@ -230,21 +230,12 @@ bool Driver::sendWriteSingleIo(int IOaddress, int value)
     write_single_io.io_address = IOaddress;
     write_single_io.value = value;
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&write_single_io);
-    writePacket(buffer,write_single_io.prefix.length + 4);
-    return readWriteSingleIO(base::Time::fromSeconds(0.1));
+    waitForReply(base::Time::fromSeconds(0.1), MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY);
+    return parseWriteSingleIOReply(&buffer[0]);writePacket(buffer,write_single_io.prefix.length + 4);
 };
-
-bool Driver::readWriteSingleIO(const base::Time& timeout)
-{
-    waitForReply(timeout, MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY);
-    return parseWriteSingleIOReply(&buffer[0]);
-}
 
 bool Driver::parseWriteSingleIOReply(uint8_t const* buffer) const
 {
     msgs::WriteSingleIoReplyMsg const& msg = *reinterpret_cast<msgs::WriteSingleIoReplyMsg const*>(buffer);
-    if(msg.result_code == write_single_io::SUCCESS)
-        return true;
-    else
-        return false;
+    return (msg.result_code == write_single_io::SUCCESS);
 }
