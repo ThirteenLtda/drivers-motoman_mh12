@@ -1,6 +1,6 @@
 #ifndef _MOTOMAN_MH12_CONSTANTS_HPP_
 #define _MOTOMAN_MH12_CONSTANTS_HPP_
-
+#include "motoman_mh12Msgs.hpp"
 namespace motoman_mh12
 {
     
@@ -141,13 +141,13 @@ namespace motoman_mh12
 	*/
         enum MotomanMsgSize
         {
-            MOTOMAN_PREFIX_MSG_SIZE = 12,
-            MOTOMAN_ROBOT_STATUS_SIZE = 35,
-            MOTOMAN_JOINT_FEEDBACK_SIZE = 136,
-            MOTOMAN_MOTION_REPLY_SIZE = 20,
-            MOTOMAN_READ_SINGLE_IO_REPLY_SIZE = 12,
-            MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE = 8,
-            MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE = 136,
+            MOTOMAN_PREFIX_MSG_SIZE = sizeof(msgs::Prefix),
+            MOTOMAN_ROBOT_STATUS_SIZE = sizeof(msgs::StatusMsg),
+            MOTOMAN_JOINT_FEEDBACK_SIZE = sizeof(msgs::JointFeedbackMsg),
+            MOTOMAN_MOTION_REPLY_SIZE = sizeof(msgs::MotionReplyMsg),
+            MOTOMAN_READ_SINGLE_IO_REPLY_SIZE = sizeof(msgs::ReadSingleIoReplyMsg),
+            MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE = sizeof(msgs::WriteSingleIoReplyMsg),
+            MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE = sizeof(msgs::JointTrajPTFullMsg),
             MOTOMAN_MAX_PKT_SIZE = 136+12
         };
         

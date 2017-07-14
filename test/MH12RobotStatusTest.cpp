@@ -26,13 +26,34 @@ TEST_F(MH12MsgsFixture, extractPacketTest)
   memcpy(header_uint8, &status_msg.prefix.msg_type, sizeof(status_msg.prefix.msg_type));
   EXPECT_EQ(0,driver.extractPacket(header_uint8,4));
   
-  int expected_size = MotomanMsgTypes::MOTOMAN_PREFIX_MSG_SIZE + MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE;
   //if lenght != expected_size  (from msg_type) it must jump to the next byte
-  EXPECT_EQ(-1,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),expected_size));
+  EXPECT_EQ(-1,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE));
   
-  status_msg.prefix.length = expected_size;
-  EXPECT_EQ(expected_size,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),expected_size));
+  status_msg.prefix.msg_type = MotomanMsgTypes::MOTOMAN_ROBOT_STATUS;
+  status_msg.prefix.length = MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE;
+  EXPECT_EQ(0,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE-1));
+  EXPECT_EQ(MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE));
+  EXPECT_EQ(MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE+1));
+  
+  status_msg.prefix.msg_type = MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK;
+  status_msg.prefix.length = MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK_SIZE;
+  EXPECT_EQ(0,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK_SIZE-1));
+  EXPECT_EQ(MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK_SIZE,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK_SIZE));
+  EXPECT_EQ(MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK_SIZE,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK_SIZE+1));
+  
+  status_msg.prefix.msg_type = MotomanMsgTypes::MOTOMAN_MOTION_REPLY;
+  status_msg.prefix.length = MotomanMsgTypes::MOTOMAN_MOTION_REPLY_SIZE;
+  EXPECT_EQ(0, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_MOTION_REPLY_SIZE-1));
+  EXPECT_EQ(MotomanMsgTypes::MOTOMAN_MOTION_REPLY_SIZE, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_MOTION_REPLY_SIZE));
+  EXPECT_EQ(MotomanMsgTypes::MOTOMAN_MOTION_REPLY_SIZE, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_MOTION_REPLY_SIZE+1));
+ 
+  status_msg.prefix.msg_type = MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY;
+  status_msg.prefix.length = MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE;
+  EXPECT_EQ(0, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE-1));
+  EXPECT_EQ(MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE));
+  EXPECT_EQ(MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE+1));
 }
+
 
 TEST_F(MH12MsgsFixture, parseStatusDriverException)
 {
