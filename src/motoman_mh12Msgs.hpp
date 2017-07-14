@@ -113,6 +113,16 @@ namespace motoman_mh12
       bool motion_possible; //!< Controller can receive motion for ROS 1=Enabled; 0=Disabled
     };
     
+    struct JointFeedbackMsg
+    {
+        int32_t robot_id;
+        int32_t valid_field;
+        float time;
+        float positions[10];
+        float velocities[10]; 
+        float accelerations[10];
+    }__attribute__((packed));
+        
     struct MotomanJointFeedback
     {
       int robot_id; // 0 = 1st robot

@@ -33,20 +33,15 @@ int Driver::returnMsgSize(int msg_type) const
     switch(msg_type)
     {
         case MotomanMsgTypes::MOTOMAN_ROBOT_STATUS:
-            return MotomanMsgTypes::MOTOMAN_PREFIX_MSG_SIZE 
-			+ MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE;
+            return MotomanMsgTypes::MOTOMAN_ROBOT_STATUS_SIZE;
         case MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK:
-            return MotomanMsgTypes::MOTOMAN_PREFIX_MSG_SIZE 
-			+ MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK_SIZE;
+            return MotomanMsgTypes::MOTOMAN_JOINT_FEEDBACK_SIZE;
         case MotomanMsgTypes::MOTOMAN_MOTION_REPLY:
-            return MotomanMsgTypes::MOTOMAN_PREFIX_MSG_SIZE 
-			+ MotomanMsgTypes::MOTOMAN_MOTION_REPLY_SIZE;
+            return MotomanMsgTypes::MOTOMAN_MOTION_REPLY_SIZE;
         case MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY:
-            return MotomanMsgTypes::MOTOMAN_PREFIX_MSG_SIZE 
-			+ MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE;
+            return MotomanMsgTypes::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE;
         case MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY:
-            return MotomanMsgTypes::MOTOMAN_PREFIX_MSG_SIZE 
-			+ MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE;
+            return MotomanMsgTypes::MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE;
         default:
             return LENGTH_UNKNOWN;
     }
