@@ -3,8 +3,7 @@
 #define MOTOMAN_MH12_DRIVER_HPP
 
 #include <iodrivers_base/Driver.hpp>
-#include "motoman_mh12Msgs.hpp"
-#include "motoman_mh12Constants.hpp"
+#include "Msgs.hpp"
 
 namespace motoman_mh12
 {
@@ -15,14 +14,16 @@ namespace motoman_mh12
     public:
         Driver();
         /** Read available packets on the I/O */
-        MotomanMsgTypes::MotomanMsgType read();
+        msgs::MotomanMsgType read();
         
         int extractPacket (uint8_t const *buffer, size_t buffer_size) const;
         
-        int returnMsgSize(int msg_type) const;
-        MotomanMsgTypes::MotomanMsgType parsePacket(uint8_t const* buffer, size_t size);
+        msgs::MotomanMsgType parsePacket(uint8_t const* buffer, size_t size);
         msgs::MotomanStatus parseReadStatus(uint8_t const* buffer, size_t size) const;
         msgs::MotomanJointFeedback parseJointFeedback(uint8_t const* buffer) const;
+        
+        msgs::MotomanStatus getRobotStatus();
+        msgs::MotomanJointFeedback getJointFeedback();
         
         
         void waitForReply(base::Time const& timeout, int32_t msg_type);
