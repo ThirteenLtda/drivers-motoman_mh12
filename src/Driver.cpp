@@ -156,7 +156,6 @@ msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
 {
     msgs::MotionCtrlMsg motion_ctrl(robot_id, sequence, cmd);
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&motion_ctrl);
-    std::cout << motion_ctrl.prefix.length << std::endl;
     writePacket(buffer, motion_ctrl.prefix.length);
     return readMotionCtrlReply(base::Time::fromSeconds(10));
 }
@@ -192,7 +191,7 @@ bool Driver::sendWriteSingleIo(int IOaddress, int value)
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&write_single_io);
     waitForReply(base::Time::fromSeconds(0.1), msgs::MOTOMAN_WRITE_SINGLE_IO_REPLY);
     return parseWriteSingleIOReply(&buffer[0]);writePacket(buffer,write_single_io.prefix.length + 4);
-};
+}
 
 bool Driver::parseWriteSingleIOReply(uint8_t const* buffer) const
 {

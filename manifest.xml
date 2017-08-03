@@ -10,6 +10,6 @@
   <depend package="base/types" />
   <depend package="drivers/iodrivers_base" />
     
-  <test_depend package="gtest"/>
-  <test_depend package="google-mock"/>
+  <test_depend package="libgtest-dev" /> 
+  <test_depend package="google-mock" />
 </package>
