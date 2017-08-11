@@ -15,7 +15,7 @@ Driver::Driver()
 
 msgs::MotomanMsgType Driver::read()
 {
-    int packet_size = readPacket(&buffer[0], buffer.size());
+    int packet_size = readPacket(&buffer[0], buffer.size(),base::Time::fromSeconds(2));
     return parsePacket(&buffer[0], packet_size);
 }
 
@@ -30,6 +30,8 @@ int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
     int length = buffer_as_int32[0];
     int msg_type = buffer_as_int32[1];
     int expected_length = msgs::returnMsgSize(msg_type);
+    
+    //std::cout << "msg_type: " << msg_type << std::endl;
     
     if(length != expected_length)
         return -1;
@@ -114,11 +116,12 @@ msgs::MotionReply Driver::parseMotionReply(uint8_t const* buffer)
     motion_reply.sequence = msg.sequence;
     motion_reply.command = msg.command;
     motion_reply.result = msg.result;
+    motion_reply.subcode = msg.subcode;
     return motion_reply;
     
 }
 
-void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time timestamp,
+msgs::MotionReply Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time timestamp,
                                     std::vector<base::JointState> const& joint_states)
 {
     msgs::JointTrajPTFullMsg joint_traj_cmd;
@@ -136,6 +139,7 @@ void Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time times
     
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&joint_traj_cmd);
     writePacket(buffer, joint_traj_cmd.prefix.length + 4);
+    return readMotionCtrlReply(base::Time::fromSeconds(1));
 }
 
 void Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
@@ -146,7 +150,7 @@ void Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
     {
         int packet_size = readPacket(&buffer[0], buffer.size(), deadline.timeLeft());
         int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(&buffer[0]);
-        if(buffer_as_int32[1]== msg_type)
+        if(buffer_as_int32[1] == msg_type)
             return;
     }
     throw std::runtime_error("timeout reached and no reply received");
@@ -157,7 +161,7 @@ msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
     msgs::MotionCtrlMsg motion_ctrl(robot_id, sequence, cmd);
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&motion_ctrl);
     writePacket(buffer, motion_ctrl.prefix.length);
-    return readMotionCtrlReply(base::Time::fromSeconds(10));
+    return readMotionCtrlReply(base::Time::fromSeconds(1));
 }
 
 msgs::MotionReply Driver::readMotionCtrlReply(const base::Time& timeout)
@@ -189,8 +193,9 @@ bool Driver::sendWriteSingleIo(int IOaddress, int value)
 {
     msgs::WriteSingleIoMsg write_single_io(IOaddress, value);
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&write_single_io);
+    writePacket(buffer,write_single_io.prefix.length + 4);
     waitForReply(base::Time::fromSeconds(0.1), msgs::MOTOMAN_WRITE_SINGLE_IO_REPLY);
-    return parseWriteSingleIOReply(&buffer[0]);writePacket(buffer,write_single_io.prefix.length + 4);
+    return parseWriteSingleIOReply(&buffer[0]);
 }
 
 bool Driver::parseWriteSingleIOReply(uint8_t const* buffer) const

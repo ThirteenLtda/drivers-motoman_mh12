@@ -110,14 +110,17 @@ namespace motoman_mh12
             //that is being responded to. MotomanMsgType::JOINT_TRAJ_FULL 
             //or motion_ctrl::MotionControlCmd   
             int32_t result;  //result code (motion_ctrl::MotionReplyResult)
+            int32_t subcode;
+            float data[10];
             
             MotionReplyMsg(){}
-            MotionReplyMsg(int robot_id, int sequence, int command, int result):
+            MotionReplyMsg(int robot_id, int sequence, int command, int result, int subcode):
             prefix(MOTOMAN_MOTION_REPLY),
             robot_id(robot_id),
             sequence(sequence),
             command(command),
-            result(result){}
+            result(result),
+            subcode(subcode){}
         }__attribute__((packed));
         
         struct MotionReply
@@ -126,6 +129,7 @@ namespace motoman_mh12
             int sequence;
             int command;
             int result;
+            int subcode;
         };
         
         struct ReadSingleIoMsg
@@ -232,15 +236,15 @@ namespace motoman_mh12
         enum MotomanMsgSize
         {
             MOTOMAN_PREFIX_MSG_SIZE = sizeof(msgs::Prefix),
-            MOTOMAN_ROBOT_STATUS_SIZE = sizeof(msgs::StatusMsg),
-            MOTOMAN_JOINT_FEEDBACK_SIZE = sizeof(msgs::JointFeedbackMsg),
-            MOTOMAN_MOTION_REPLY_SIZE = sizeof(msgs::MotionReplyMsg),
-            MOTOMAN_READ_SINGLE_IO_REPLY_SIZE = sizeof(msgs::ReadSingleIoReplyMsg),
-            MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE = sizeof(msgs::WriteSingleIoReplyMsg),
-            MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE = sizeof(msgs::JointTrajPTFullMsg),
+            MOTOMAN_ROBOT_STATUS_SIZE = sizeof(msgs::StatusMsg) -4,
+            MOTOMAN_JOINT_FEEDBACK_SIZE = sizeof(msgs::JointFeedbackMsg) -4,
+            MOTOMAN_MOTION_REPLY_SIZE = sizeof(msgs::MotionReplyMsg) -4,
+            MOTOMAN_READ_SINGLE_IO_REPLY_SIZE = sizeof(msgs::ReadSingleIoReplyMsg) -4,
+            MOTOMAN_WRITE_SINGLE_IO_REPLY_SIZE = sizeof(msgs::WriteSingleIoReplyMsg) -4,
+            MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE = sizeof(msgs::JointTrajPTFullMsg) -4,
             MOTOMAN_MOTION_CTRL_SIZE = sizeof(msgs::MotionCtrlMsg),
-            MOTOMAN_READ_SINGLE_IO_SIZE = sizeof(msgs::ReadSingleIoMsg),
-            MOTOMAN_WRITE_SINGLE_IO_SIZE = sizeof(msgs::WriteSingleIoMsg),
+            MOTOMAN_READ_SINGLE_IO_SIZE = sizeof(msgs::ReadSingleIoMsg) -4,
+            MOTOMAN_WRITE_SINGLE_IO_SIZE = sizeof(msgs::WriteSingleIoMsg) -4,
             MOTOMAN_MAX_PKT_SIZE = 136+12
         };
         /** Returns the expected packet size given a message type, if there is
