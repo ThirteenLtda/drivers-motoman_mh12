@@ -12,8 +12,16 @@
 #    LIBS ${Boost_SYSTEM_LIBRARY} 
 #    DEPS motoman_mh12)
 #    
-rock_gtest(test_Driver
-   test_Driver.cpp
-   HEADERS
-   LIBS ${Boost_SYSTEM_LIBRARY} 
-   DEPS motoman_mh12)
+#rock_gtest(test_Driver
+#   test_Driver.cpp
+#   HEADERS
+#   LIBS ${Boost_SYSTEM_LIBRARY} 
+#   DEPS motoman_mh12)
+
+rock_executable(test_read_mh12
+    test_driver_mh12.cpp
+    DEPS motoman_mh12)
+
+rock_executable(test_robot_streaming
+    test_robot_streaming.cpp
+    DEPS motoman_mh12)
