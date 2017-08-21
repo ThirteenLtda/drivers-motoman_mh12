@@ -14,7 +14,13 @@ namespace motoman_mh12
      */
     namespace msgs
     {
-        
+        enum CommType
+        {
+            INVALID = 0,
+            TOPIC = 1,
+            SERVICE_REQUEST = 2,
+            SERVICE_REPLY = 3
+        };
         enum MotomanMsgType
         {
             MOTOMAN_ROBOT_STATUS = 13,
@@ -45,6 +51,13 @@ namespace motoman_mh12
             Prefix(msgs::MotomanMsgType msg_type):
             msg_type(msg_type),
             comm_type(0),
+            reply_code(0)
+            {
+                length = returnMsgSize(msg_type);
+            } 
+            Prefix(msgs::MotomanMsgType msg_type, msgs::CommType comm_type):
+            msg_type(msg_type),
+            comm_type(comm_type),
             reply_code(0)
             {
                 length = returnMsgSize(msg_type);
@@ -91,7 +104,7 @@ namespace motoman_mh12
             float data[10] = {0};
             
             MotionCtrlMsg(int robot_id, int sequence, int cmd):
-            prefix(MOTOMAN_MOTION_CTRL),
+            prefix(MOTOMAN_MOTION_CTRL, SERVICE_REQUEST),
             robot_id(robot_id),
             sequence(sequence),
             cmd(cmd){}
@@ -230,7 +243,7 @@ namespace motoman_mh12
             float accelerations[10]; //!< Desired joint accelerations in radians/sec2. Same orderins as positions.
             
             JointTrajPTFullMsg():
-            prefix(MOTOMAN_JOINT_TRAJ_PT_FULL){}
+            prefix(MOTOMAN_JOINT_TRAJ_PT_FULL, SERVICE_REQUEST){}
         }__attribute__((packed));
         
         enum MotomanMsgSize

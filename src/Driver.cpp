@@ -101,7 +101,7 @@ msgs::MotomanJointFeedback Driver::parseJointFeedback(uint8_t const* buffer) con
     for(int i = 0; i<10; i++)
     {
         base::JointState joint_state;
-        joint_state.position = double(msg.positions[1+i]);
+        joint_state.position = double(msg.positions[i]);
         parsed_joint_feedback.joint_states.push_back(joint_state);
     }
     
