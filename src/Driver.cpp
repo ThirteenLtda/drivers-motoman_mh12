@@ -31,8 +31,6 @@ int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
     int msg_type = buffer_as_int32[1];
     int expected_length = msgs::returnMsgSize(msg_type);
     
-    //std::cout << "msg_type: " << msg_type << std::endl;
-    
     if(length != expected_length)
         return -1;
     
@@ -121,6 +119,16 @@ msgs::MotionReply Driver::parseMotionReply(uint8_t const* buffer)
     
 }
 
+float removeNaNs(float a)
+{
+    if(a != a)
+    {
+        return 0.0;
+    }
+    else
+        return a;
+}
+
 msgs::MotionReply Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time timestamp,
                                     std::vector<base::JointState> const& joint_states)
 {
@@ -132,11 +140,11 @@ msgs::MotionReply Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, bas
     joint_traj_cmd.time = timestamp.toSeconds();
     for(size_t i=0; i<joint_states.size();i++)
     {
-        joint_traj_cmd.positions[i] =  joint_states[i].position;
-        joint_traj_cmd.velocities[i] = joint_states[i].speed;
-        joint_traj_cmd.accelerations[i] = joint_states[i].acceleration;
-    }
+        joint_traj_cmd.positions[i] =  removeNaNs(joint_states[i].position);
+        joint_traj_cmd.velocities[i] = removeNaNs(joint_states[i].speed);
+        joint_traj_cmd.accelerations[i] = removeNaNs(joint_states[i].acceleration);
     
+    }
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&joint_traj_cmd);
     writePacket(buffer, joint_traj_cmd.prefix.length + 4);
     return readMotionCtrlReply(base::Time::fromSeconds(1));
