@@ -18,7 +18,7 @@ rock_gtest(test_Driver
    LIBS ${Boost_SYSTEM_LIBRARY} 
    DEPS motoman_mh12)
 
-rock_executable(test_read_mh12
+rock_executable(test_control_mh12
     test_driver_mh12.cpp
     DEPS motoman_mh12)
 

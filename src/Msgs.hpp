@@ -264,7 +264,7 @@ namespace motoman_mh12
          * no match, it return -1 to move the buffer pointer
          * @param msg_type Message type from the header
          */
-        int returnMsgSize(int msg_type)
+        inline int returnMsgSize(int msg_type)
         {
             switch(msg_type)
             {
