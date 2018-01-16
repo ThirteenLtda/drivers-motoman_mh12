@@ -129,20 +129,19 @@ float removeNaNs(float a)
         return a;
 }
 
-msgs::MotionReply Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time timestamp,
-                                    std::vector<base::JointState> const& joint_states)
+msgs::MotionReply Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::samples::Joints const& joints_samples)
 {
     msgs::JointTrajPTFullMsg joint_traj_cmd;
     joint_traj_cmd.prefix.length = msgs::MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE; 
     joint_traj_cmd.prefix.msg_type = msgs::MOTOMAN_JOINT_TRAJ_PT_FULL;
     joint_traj_cmd.robot_id = int32_t(robot_id);
     joint_traj_cmd.sequence = int32_t(sequence);
-    joint_traj_cmd.time = timestamp.toSeconds();
-    for(size_t i=0; i<joint_states.size();i++)
+    joint_traj_cmd.time = joints_samples.time.toSeconds();
+    for(size_t i=0; i<joints_samples.size();i++)
     {
-        joint_traj_cmd.positions[i] =  removeNaNs(joint_states[i].position);
-        joint_traj_cmd.velocities[i] = removeNaNs(joint_states[i].speed);
-        joint_traj_cmd.accelerations[i] = removeNaNs(joint_states[i].acceleration);
+        joint_traj_cmd.positions[i] =  removeNaNs(joints_samples[i].position);
+        joint_traj_cmd.velocities[i] = removeNaNs(joints_samples[i].speed);
+        joint_traj_cmd.accelerations[i] = removeNaNs(joints_samples[i].acceleration);
     
     }
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&joint_traj_cmd);

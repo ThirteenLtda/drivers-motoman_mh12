@@ -5,6 +5,7 @@
 #include <vector>
 #include <base/Time.hpp>
 #include <base/JointState.hpp>
+#include <base/samples/Joints.hpp>
 
 namespace motoman_mh12
 {

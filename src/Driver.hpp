@@ -27,9 +27,7 @@ namespace motoman_mh12
         
         
         void waitForReply(base::Time const& timeout, int32_t msg_type);
-        msgs::MotionReply sendJointTrajPTFullCmd(int robot_id, int sequence, base::Time timestamp,
-                                    std::vector<base::JointState> const& joint_states);
-        
+        msgs::MotionReply sendJointTrajPTFullCmd(int robot_id, int sequence, base::samples::Joints const& joints_samples);
         msgs::MotionReply sendMotionCtrl(int robot_id, int sequence, int cmd);
         msgs::MotionReply readMotionCtrlReply(base::Time const& timeout);
         msgs::MotionReply parseMotionReply(uint8_t const* buffer);
