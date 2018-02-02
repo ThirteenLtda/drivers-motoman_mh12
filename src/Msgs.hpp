@@ -24,6 +24,7 @@ namespace motoman_mh12
         };
         enum MotomanMsgType
         {
+            JOINT_POSITION = 10,
             MOTOMAN_ROBOT_STATUS = 13,
             MOTOMAN_JOINT_TRAJ_PT_FULL = 14,
             MOTOMAN_JOINT_FEEDBACK = 15,
@@ -122,7 +123,7 @@ namespace motoman_mh12
             int32_t sequence; //!<Reference to the sequence number that is being responded to. 
             int32_t command; //!< Reference to the command or message type 
             //that is being responded to. MotomanMsgType::JOINT_TRAJ_FULL 
-            //or motion_ctrl::MotionControlCmd   
+            //or motion_ctrl::MotionControlCmd
             int32_t result;  //result code (motion_ctrl::MotionReplyResult)
             int32_t subcode;
             float data[10];
@@ -145,6 +146,15 @@ namespace motoman_mh12
             int result;
             int subcode;
         };
+
+        struct JointMsg
+        {
+            Prefix prefix;
+            int32_t sequence; //!< Address of the controller I/O signal to be read. Values from 00010 to 1000559, please refer to the controller Concurrent I/O Manual for details on addresses.
+            float joints[10];
+
+            ReadSingleIoMsg(): prefix(JOINT_POSITION){}
+        }__attribute__((packed));
         
         struct ReadSingleIoMsg
         {
