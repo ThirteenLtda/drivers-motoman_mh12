@@ -3,4 +3,13 @@ rock_library(motoman_mh12
     HEADERS Driver.hpp
             Msgs.hpp
     DEPS_PKGCONFIG base-types iodrivers_base)
-        
+
+rock_executable(test_limits_mh12
+        test_limits_mh12.cpp
+        DEPS motoman_mh12
+)
+
+rock_executable(test_src_driver_mh12
+        test_src_driver_mh12.cpp
+        DEPS motoman_mh12
+)

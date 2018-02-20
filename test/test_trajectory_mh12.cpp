@@ -16,12 +16,11 @@ int main(int argc, char **argv)
   Driver driver_streaming;
   driver_streaming.openTCP("192.168.10.77", 50241);
   
-  std::cout << "Connected" << std::endl;
   std::vector<base::JointState> current_position;
   while(true)
-  {
+  {  
+       std::cout << "Streamer Msg received" << std::endl;      
        msgs::MotomanMsgType msg_type =  driver_streaming.read();
-       std::cout << "Streamer Msg received" << std::endl;
        if(msg_type == msgs::MOTOMAN_JOINT_FEEDBACK)
        {
            msgs::MotomanJointFeedback joint_feedback = driver_streaming.getJointFeedback();
