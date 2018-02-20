@@ -163,12 +163,30 @@ void Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
     throw std::runtime_error("timeout reached and no reply received");
 }
 
+msgs::MotionReply Driver::sendJointPosition(int sequence, std::vector<float> joints_positions)
+{
+    msgs::JointPositionMsg joint_position_msg;
+    joint_position_msg.sequence = int32_t(sequence);
+    for(size_t i=0; i<joints_positions.size();i++)
+        joint_position_msg.joints[i] =  removeNaNs(joints_positions[i]);
+    uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&joint_position_msg);
+    writePacket(buffer, joint_position_msg.prefix.length + 4);
+    return readJointPositionReply(base::Time::fromSeconds(1));
+}
+
 msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
 {
     msgs::MotionCtrlMsg motion_ctrl(robot_id, sequence, cmd);
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&motion_ctrl);
     writePacket(buffer, motion_ctrl.prefix.length + 4);
     return readMotionCtrlReply(base::Time::fromSeconds(1));
+}
+
+msgs::MotionReply Driver::readJointPositionReply(const base::Time& timeout)
+{
+    //Expect Motion Reply, but unsure
+    waitForReply(timeout,msgs::MOTOMAN_MOTION_REPLY);
+    return parseMotionReply(&buffer[0]);
 }
 
 msgs::MotionReply Driver::readMotionCtrlReply(const base::Time& timeout)

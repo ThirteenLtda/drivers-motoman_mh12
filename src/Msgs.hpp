@@ -147,15 +147,15 @@ namespace motoman_mh12
             int subcode;
         };
 
-        struct JointMsg
+        struct JointPositionMsg
         {
             Prefix prefix;
-            int32_t sequence; //!< Address of the controller I/O signal to be read. Values from 00010 to 1000559, please refer to the controller Concurrent I/O Manual for details on addresses.
+            int32_t sequence;
             float joints[10];
 
-            ReadSingleIoMsg(): prefix(JOINT_POSITION){}
+            JointPositionMsg(): prefix(JOINT_POSITION){}
         }__attribute__((packed));
-        
+
         struct ReadSingleIoMsg
         {
             Prefix prefix;

@@ -30,6 +30,8 @@ namespace motoman_mh12
         msgs::MotionReply sendJointTrajPTFullCmd(int robot_id, int sequence, base::samples::Joints const& joints_samples);
         msgs::MotionReply sendMotionCtrl(int robot_id, int sequence, int cmd);
         msgs::MotionReply readMotionCtrlReply(base::Time const& timeout);
+        msgs::MotionReply sendJointPosition(int sequence, std::vector<float> joints_positions);
+        msgs::MotionReply readJointPositionReply(base::Time const& timeout);
         msgs::MotionReply parseMotionReply(uint8_t const* buffer);
         
         void sendReadSingleIO(int IOaddress);
