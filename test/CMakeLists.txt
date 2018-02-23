@@ -29,4 +29,6 @@ rock_executable(test_stop_command
     test_stop_command.cpp
     DEPS motoman_mh12)
 
+rock_executable(test_add_to_queue
+    test_add_to_queue.cpp
     DEPS motoman_mh12)
