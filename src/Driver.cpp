@@ -90,9 +90,9 @@ msgs::MotomanJointFeedback Driver::parseJointFeedback(uint8_t const* buffer) con
     msgs::MotomanJointFeedback parsed_joint_feedback;
     parsed_joint_feedback.robot_id = msg.robot_id;
     parsed_joint_feedback.valid_field = msg.valid_field;
-    //The MotoROS driver send only the position, so the bit masking of the valid fields
-    //must be always 2.
-    if(parsed_joint_feedback.valid_field !=2)
+    //The MotoROS driver sends position and velocity, so the bit masking of the valid fields
+    //must be always 6
+    if(parsed_joint_feedback.valid_field !=6)
         throw std::runtime_error("Bit-masking of valid fields inconsistent");
     
     parsed_joint_feedback.time.fromSeconds(msg.time);
