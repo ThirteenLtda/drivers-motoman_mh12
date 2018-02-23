@@ -24,4 +24,9 @@ rock_executable(test_control_mh12
 
 rock_executable(test_robot_streaming
     test_robot_streaming.cpp
+
+rock_executable(test_stop_command
+    test_stop_command.cpp
+    DEPS motoman_mh12)
+
     DEPS motoman_mh12)
