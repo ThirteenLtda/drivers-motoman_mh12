@@ -120,16 +120,17 @@ TEST_F(DriverTest, sendJointTrajPTFullCmd)
 
     IODRIVERS_BASE_MOCK();
 
-    std::vector<base::JointState> current_position;
-    current_position.push_back(base::JointState::Position(1.57));
+    base::samples::Joints current_position;
+    current_position.elements.push_back(base::JointState::Position(1.57));
     for(int i=0; i<9; i++)
     {
-        current_position.push_back(base::JointState::Position(0));
+        current_position.elements.push_back(base::JointState::Position(0));
     }
     EXPECT_REPLY(
 	std::vector<uint8_t>(expected_command, expected_command + sizeof(expected_command)),
 	std::vector<uint8_t>(expected_reply, expected_reply + sizeof(expected_reply)));
-    msgs::MotionReply reply = driver.sendJointTrajPTFullCmd(0, 1, base::Time::fromSeconds(5), current_position);
+    current_position.time = base::Time::fromSeconds(5);
+    msgs::MotionReply reply = driver.sendJointTrajPTFullCmd(0, 1, current_position);
 }
 
 int main(int argc, char **argv)

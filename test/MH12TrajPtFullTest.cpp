@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
-#include <motoman_mh12/motoman_mh12Msgs.hpp>
-#include <motoman_mh12/motoman_mh12Constants.hpp>
+#include <motoman_mh12/Msgs.hpp>
 #include <motoman_mh12/Driver.hpp>
 using namespace motoman_mh12;
 

@@ -30,16 +30,12 @@ int main(int argc, char **argv)
         
         msgs::MotomanJointFeedback joint_feedback = driver.getJointFeedback();
         std::cout << "Robot id: " << joint_feedback.robot_id << std::endl;
-        std::cout << "Joint 0: " << joint_feedback.joint_states[0].position << std::endl;
-        std::cout << "Joint 1: " << joint_feedback.joint_states[1].position << std::endl;
-        std::cout << "Joint 2: " << joint_feedback.joint_states[2].position << std::endl;
-        std::cout << "Joint 3: " << joint_feedback.joint_states[3].position << std::endl;
-        std::cout << "Joint 4: " << joint_feedback.joint_states[4].position << std::endl;
-        std::cout << "Joint 5: " << joint_feedback.joint_states[5].position << std::endl;
-        std::cout << "Joint 6: " << joint_feedback.joint_states[6].position << std::endl;
-        std::cout << "Joint 7: " << joint_feedback.joint_states[7].position << std::endl;
-        std::cout << "Joint 8: " << joint_feedback.joint_states[8].position << std::endl;
-        std::cout << "Joint 9: " << joint_feedback.joint_states[9].position << std::endl;
+        std::cout << "Joint 0: " << joint_feedback.joint_states[0].position << " " << joint_feedback.joint_states[0].speed << std::endl;
+        std::cout << "Joint 1: " << joint_feedback.joint_states[1].position << " " << joint_feedback.joint_states[1].speed << std::endl;
+        std::cout << "Joint 2: " << joint_feedback.joint_states[2].position << " " << joint_feedback.joint_states[2].speed << std::endl;
+        std::cout << "Joint 3: " << joint_feedback.joint_states[3].position << " " << joint_feedback.joint_states[3].speed << std::endl;
+        std::cout << "Joint 4: " << joint_feedback.joint_states[4].position << " " << joint_feedback.joint_states[4].speed << std::endl;
+        std::cout << "Joint 5: " << joint_feedback.joint_states[5].position << " " << joint_feedback.joint_states[5].speed << std::endl;
      }
      catch(iodrivers_base::TimeoutError e)
      {
