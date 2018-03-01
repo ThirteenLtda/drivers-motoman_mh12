@@ -49,7 +49,7 @@ TEST_F(DriverTest, it_reads_correctly_the_possible_messages_headers)
     joint_feedback.prefix.length = 36*4;
     joint_feedback.prefix.msg_type = msgs::MOTOMAN_JOINT_FEEDBACK;
     joint_feedback.robot_id = 0;
-    joint_feedback.valid_field = 2;
+    joint_feedback.valid_field = 6;
     joint_feedback.time = 0.0;
     for(int i=0; i<10; i++)
     {
@@ -131,6 +131,76 @@ TEST_F(DriverTest, sendJointTrajPTFullCmd)
 	std::vector<uint8_t>(expected_reply, expected_reply + sizeof(expected_reply)));
     current_position.time = base::Time::fromSeconds(5);
     msgs::MotionReply reply = driver.sendJointTrajPTFullCmd(0, 1, current_position);
+}
+
+TEST_F(DriverTest, it_extracts_all_the_expected_packages_correctly)
+{
+  msgs::StatusMsg status_msg;
+  status_msg.prefix.msg_type = msgs::MOTOMAN_ROBOT_STATUS;
+  uint8_t header_uint8[4];
+  memcpy(header_uint8, &status_msg.prefix.msg_type, sizeof(status_msg.prefix.msg_type));
+  EXPECT_EQ(0,driver.extractPacket(header_uint8,4));
+  
+  //if length != expected_size  (from msg_type) it must jump to the next byte
+  EXPECT_EQ(-1,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_ROBOT_STATUS_SIZE));
+  
+  status_msg.prefix.msg_type = msgs::MOTOMAN_ROBOT_STATUS;
+  status_msg.prefix.length = msgs::MOTOMAN_ROBOT_STATUS_SIZE;
+  EXPECT_EQ(0,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_ROBOT_STATUS_SIZE-1));
+  EXPECT_EQ(msgs::MOTOMAN_ROBOT_STATUS_SIZE,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_ROBOT_STATUS_SIZE));
+  EXPECT_EQ(msgs::MOTOMAN_ROBOT_STATUS_SIZE,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_ROBOT_STATUS_SIZE+1));
+  
+  status_msg.prefix.msg_type = msgs::MOTOMAN_JOINT_FEEDBACK;
+  status_msg.prefix.length = msgs::MOTOMAN_JOINT_FEEDBACK_SIZE;
+  EXPECT_EQ(0,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_JOINT_FEEDBACK_SIZE-1));
+  EXPECT_EQ(msgs::MOTOMAN_JOINT_FEEDBACK_SIZE,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_JOINT_FEEDBACK_SIZE));
+  EXPECT_EQ(msgs::MOTOMAN_JOINT_FEEDBACK_SIZE,driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_JOINT_FEEDBACK_SIZE+1));
+  
+  status_msg.prefix.msg_type = msgs::MOTOMAN_MOTION_REPLY;
+  status_msg.prefix.length = msgs::MOTOMAN_MOTION_REPLY_SIZE;
+  EXPECT_EQ(0, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_MOTION_REPLY_SIZE-1));
+  EXPECT_EQ(msgs::MOTOMAN_MOTION_REPLY_SIZE, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_MOTION_REPLY_SIZE));
+  EXPECT_EQ(msgs::MOTOMAN_MOTION_REPLY_SIZE, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_MOTION_REPLY_SIZE+1));
+ 
+  status_msg.prefix.msg_type = msgs::MOTOMAN_READ_SINGLE_IO_REPLY;
+  status_msg.prefix.length = msgs::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE;
+  EXPECT_EQ(0, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE-1));
+  EXPECT_EQ(msgs::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE));
+  EXPECT_EQ(msgs::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE, driver.extractPacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE+1));
+}
+
+
+TEST_F(DriverTest, it_throws_when_status_contains_error_msgs)
+{
+  msgs::StatusMsg status_msg;
+  status_msg.prefix.msg_type =  msgs::MOTOMAN_ROBOT_STATUS;
+  status_msg.drives_powered = -1; 
+  int expected_size = msgs::MOTOMAN_PREFIX_MSG_SIZE + msgs::MOTOMAN_ROBOT_STATUS_SIZE;
+  EXPECT_THROW(driver.parsePacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_ROBOT_STATUS_SIZE), std::runtime_error);
+  
+  status_msg.drives_powered = 0;
+  status_msg.e_stopped = -1;
+  EXPECT_THROW(driver.parsePacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_ROBOT_STATUS_SIZE), std::runtime_error);
+ 
+  status_msg.e_stopped = 0;
+  status_msg.error_code = -1;
+  EXPECT_THROW(driver.parsePacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_ROBOT_STATUS_SIZE), std::runtime_error);
+  
+  status_msg.error_code = 0;
+  status_msg.ln_error = -1;
+  EXPECT_THROW(driver.parsePacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_ROBOT_STATUS_SIZE), std::runtime_error);
+  
+  status_msg.ln_error = 0;
+  status_msg.ln_motion = -1;
+  EXPECT_THROW(driver.parsePacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_ROBOT_STATUS_SIZE), std::runtime_error);
+ 
+  status_msg.ln_motion = 0;
+  status_msg.mode = -1;
+  EXPECT_THROW(driver.parsePacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_ROBOT_STATUS_SIZE), std::runtime_error);
+ 
+  status_msg.mode = 0;
+  status_msg.motion_possible = -1;
+  EXPECT_THROW(driver.parsePacket(reinterpret_cast<uint8_t*>(&status_msg),msgs::MOTOMAN_ROBOT_STATUS_SIZE), std::runtime_error);
 }
 
 int main(int argc, char **argv)

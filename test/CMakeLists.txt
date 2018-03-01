@@ -1,15 +1,3 @@
-rock_gtest(MH12RobotStatusTest
-   MH12RobotStatusTest.cpp
-   HEADERS
-   LIBS ${Boost_SYSTEM_LIBRARY} 
-   DEPS motoman_mh12)
-  
-rock_gtest(MH12TrajPtFullTest
-   MH12TrajPtFullTest.cpp
-   HEADERS
-   LIBS ${Boost_SYSTEM_LIBRARY} 
-   DEPS motoman_mh12)
-   
 rock_gtest(test_Driver
    test_Driver.cpp
    HEADERS
@@ -25,7 +13,7 @@ rock_executable(test_robot_streaming
     DEPS motoman_mh12)
 
 rock_executable(test_stop_command
-    test_stop_command.cpp
+    test_stop_traj.cpp
     DEPS motoman_mh12)
 
 rock_executable(test_add_to_queue
