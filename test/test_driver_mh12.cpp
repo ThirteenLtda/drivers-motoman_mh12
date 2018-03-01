@@ -60,11 +60,5 @@ int main(int argc, char **argv)
   std::cout << "SubCode: " << reply.subcode << std::endl;
  
   sleep(8);
-  
-  //reply = driver_ctrl.sendMotionCtrl(0, 0, msgs::motion_ctrl::MotionControlCmds::STOP_MOTION);
-  //std::cout << "Result: " << reply.result << " for the cmd: " << reply.command << std::endl;
-  //reply = driver_ctrl.sendMotionCtrl(0, 0, msgs::motion_ctrl::MotionControlCmds::STOP_TRAJ_MODE);
-  //std::cout << "Result: " << reply.result << " for the cmd: " << reply.command << std::endl;
-        
 }
   

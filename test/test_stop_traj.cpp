@@ -40,32 +40,38 @@ int main(int argc, char **argv)
     current_position.time = base::Time::fromSeconds(0);
     reply = driver_ctrl.sendJointTrajPTFullCmd(0, 0, current_position);
     printMotionReply(reply);
-
-    //Send second trajectory point 
-    current_position[0].position = -1.;
-    current_position[0].speed = 0.37;
-    current_position.time = base::Time::fromSeconds(2);
-    reply = driver_ctrl.sendJointTrajPTFullCmd(0, 1, current_position);
-    printMotionReply(reply);
+    
     
     //Send second trajectory point 
-    current_position[0].position = -1.5;
-    current_position[0].speed = 0.37;
-    current_position.time = base::Time::fromSeconds(4);
-    reply = driver_ctrl.sendJointTrajPTFullCmd(0, 2, current_position);
+    current_position[0].position = -1.4;
+    current_position[0].speed = 0;
+    current_position.time = base::Time::fromSeconds(3);
+    std::cout << "-------------------------------------------------" << std::endl;
+    reply = driver_ctrl.sendJointTrajPTFullCmd(0, 1, current_position);
     printMotionReply(reply);
-
+    std::cout << "-------------------------------------------------" << std::endl;
+    base::Time start = base::Time::now();
+    //Send second trajectory point 
+    current_position[0].position = 1.5;
+    current_position[0].speed = 0.0;
+    current_position.time = base::Time::fromSeconds(0);
+    send_joint_cmd(driver_ctrl, 2, current_position);
     //Send second trajectory point 
     current_position[0].position = 1.5;
     current_position[0].speed = 0.0;
     current_position.time = base::Time::fromSeconds(6);
-    reply = driver_ctrl.sendJointTrajPTFullCmd(0, 3, current_position);
-    printMotionReply(reply);
+    send_joint_cmd(driver_ctrl, 2, current_position);
 
     //Stop before motion was complete
-    sleep(7);
+    usleep(7000000);
     reply = driver_ctrl.sendMotionCtrl(0, 0, msgs::motion_ctrl::MotionControlCmds::STOP_MOTION);
     printMotionReply(reply);
+
+    base::Time finish = base::Time::now();
+    double elapsed = (finish-start).toMilliseconds();
+    std::cout << "-------------------------------------------------" << std::endl;
+    std::cout << "TEMPO " << elapsed << " ms" << std::endl;
+
 
     sleep(1);
 
