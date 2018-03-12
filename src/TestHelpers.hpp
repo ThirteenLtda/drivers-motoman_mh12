@@ -25,10 +25,10 @@ void printMotionReply(msgs::MotionReply &reply)
     std::cout << "############################" << std::endl;
     std::cout << "Result: " << reply.result << " for the cmd: " << reply.command << std::endl;
     std::cout << "With subcode " << reply.subcode << std::endl;
-    std::cout << "Sequence #" << reply.sequence << std::endl;
+    std::cout << "sequence_id #" << reply.sequence_id << std::endl;
 }
 
-int send_joint_cmd(Driver& driver_ctrl, int sequence, base::samples::Joints target_position)
+int send_joint_cmd(Driver& driver_ctrl, int sequence_id, base::samples::Joints target_position)
 {
     msgs::MotionReply reply;
     int busy = 0;
@@ -36,7 +36,7 @@ int send_joint_cmd(Driver& driver_ctrl, int sequence, base::samples::Joints targ
     base::Time start = base::Time::now();
     while(true){
         
-        reply = driver_ctrl.sendJointTrajPTFullCmd(0, sequence, target_position);
+        reply = driver_ctrl.sendJointTrajPTFullCmd(0, sequence_id, target_position);
         
         if (reply.result == 1)
         {

@@ -101,14 +101,14 @@ namespace motoman_mh12
         {
             Prefix prefix;
             int32_t robot_id;
-            int32_t sequence;
+            int32_t sequence_id;
             int32_t cmd; //!< motion command motion_ctrl::MotionControlCmd
             float data[10] = {0};
             
-            MotionCtrlMsg(int robot_id, int sequence, int cmd):
+            MotionCtrlMsg(int robot_id, int sequence_id, int cmd):
             prefix(MOTOMAN_MOTION_CTRL, SERVICE_REQUEST),
             robot_id(robot_id),
-            sequence(sequence),
+            sequence_id(sequence_id),
             cmd(cmd){}
         }__attribute__((packed));
         
@@ -120,7 +120,7 @@ namespace motoman_mh12
         {
             Prefix prefix;
             int32_t robot_id; 
-            int32_t sequence; //!<Reference to the sequence number that is being responded to. 
+            int32_t sequence_id; //!<Reference to the sequence_id number that is being responded to. 
             int32_t command; //!< Reference to the command or message type 
             //that is being responded to. MotomanMsgType::JOINT_TRAJ_FULL 
             //or motion_ctrl::MotionControlCmd
@@ -129,10 +129,10 @@ namespace motoman_mh12
             float data[10];
             
             MotionReplyMsg(){}
-            MotionReplyMsg(int robot_id, int sequence, int command, int result, int subcode):
+            MotionReplyMsg(int robot_id, int sequence_id, int command, int result, int subcode):
             prefix(MOTOMAN_MOTION_REPLY),
             robot_id(robot_id),
-            sequence(sequence),
+            sequence_id(sequence_id),
             command(command),
             result(result),
             subcode(subcode){}
@@ -141,7 +141,7 @@ namespace motoman_mh12
         struct MotionReply
         {
             int robot_id;
-            int sequence;
+            int sequence_id;
             int command;
             int result;
             int subcode;
@@ -150,7 +150,7 @@ namespace motoman_mh12
         struct JointPositionMsg
         {
             Prefix prefix;
-            int32_t sequence;
+            int32_t sequence_id;
             float joints[10];
 
             JointPositionMsg(): prefix(JOINT_POSITION){}
@@ -246,7 +246,7 @@ namespace motoman_mh12
         {
             Prefix prefix;
             int32_t robot_id;
-            int32_t sequence; //!< Index of point in trajectory 0 = Initial trajectory point, which should match the robot current position.
+            int32_t sequence_id; //!< Index of point in trajectory 0 = Initial trajectory point, which should match the robot current position.
             int32_t valid_field = 7; // MotoROS expects all values, so this value should be set to 7
             float time;
             float positions[10];//!< Desired joint positions in radian. Ordering matches the sequential joint order: SLURBT for 6 axis robot and SLEURBT for 7 axis robots.
@@ -371,7 +371,7 @@ namespace motoman_mh12
                         MSGHEADER,
                         MSGTYPE,
                         GROUPNO,
-                        SEQUENCE,
+                        SEQUENCE_ID,
                         COMMAND,
                         DATA = 3010,
                         DATA_START_POS,

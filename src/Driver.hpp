@@ -24,10 +24,10 @@ class Driver : public iodrivers_base::Driver
     msgs::MotomanJointFeedback getJointFeedback();
 
     void waitForReply(base::Time const &timeout, int32_t msg_type);
-    msgs::MotionReply sendJointTrajPTFullCmd(int robot_id, int sequence, base::samples::Joints const &joints_samples);
-    msgs::MotionReply sendMotionCtrl(int robot_id, int sequence, int cmd);
+    msgs::MotionReply sendJointTrajPTFullCmd(int robot_id, int sequence_id, base::samples::Joints const &joints_samples);
+    msgs::MotionReply sendMotionCtrl(int robot_id, int sequence_id, int cmd);
     msgs::MotionReply readMotionCtrlReply(base::Time const &timeout);
-    msgs::MotionReply sendJointPosition(int sequence, std::vector<float> joints_positions);
+    msgs::MotionReply sendJointPosition(int sequence_id, std::vector<float> joints_positions);
     msgs::MotionReply readJointPositionReply(base::Time const &timeout);
     msgs::MotionReply parseMotionReply(uint8_t const *buffer);
 

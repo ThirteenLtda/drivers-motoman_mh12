@@ -111,7 +111,7 @@ msgs::MotionReply Driver::parseMotionReply(uint8_t const* buffer)
     msgs::MotionReplyMsg const& msg = *reinterpret_cast<msgs::MotionReplyMsg const*>(buffer);
     msgs::MotionReply motion_reply;
     motion_reply.robot_id = msg.robot_id;
-    motion_reply.sequence = msg.sequence;
+    motion_reply.sequence_id = msg.sequence_id;
     motion_reply.command = msg.command;
     motion_reply.result = msg.result;
     motion_reply.subcode = msg.subcode;
@@ -129,13 +129,13 @@ float removeNaNs(float a)
         return a;
 }
 
-msgs::MotionReply Driver::sendJointTrajPTFullCmd(int robot_id, int sequence, base::samples::Joints const& joints_samples)
+msgs::MotionReply Driver::sendJointTrajPTFullCmd(int robot_id, int sequence_id, base::samples::Joints const& joints_samples)
 {
     msgs::JointTrajPTFullMsg joint_traj_cmd;
     joint_traj_cmd.prefix.length = msgs::MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE; 
     joint_traj_cmd.prefix.msg_type = msgs::MOTOMAN_JOINT_TRAJ_PT_FULL;
     joint_traj_cmd.robot_id = int32_t(robot_id);
-    joint_traj_cmd.sequence = int32_t(sequence);
+    joint_traj_cmd.sequence_id = int32_t(sequence_id);
     joint_traj_cmd.time = joints_samples.time.toSeconds();
     for(size_t i=0; i<joints_samples.size();i++)
     {
@@ -163,10 +163,10 @@ void Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
     throw std::runtime_error("timeout reached and no reply received");
 }
 
-msgs::MotionReply Driver::sendJointPosition(int sequence, std::vector<float> joints_positions)
+msgs::MotionReply Driver::sendJointPosition(int sequence_id, std::vector<float> joints_positions)
 {
     msgs::JointPositionMsg joint_position_msg;
-    joint_position_msg.sequence = int32_t(sequence);
+    joint_position_msg.sequence_id = int32_t(sequence_id);
     for(size_t i=0; i<joints_positions.size();i++)
         joint_position_msg.joints[i] =  removeNaNs(joints_positions[i]);
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&joint_position_msg);
@@ -174,9 +174,9 @@ msgs::MotionReply Driver::sendJointPosition(int sequence, std::vector<float> joi
     return readJointPositionReply(base::Time::fromSeconds(1));
 }
 
-msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence, int cmd)
+msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence_id, int cmd)
 {
-    msgs::MotionCtrlMsg motion_ctrl(robot_id, sequence, cmd);
+    msgs::MotionCtrlMsg motion_ctrl(robot_id, sequence_id, cmd);
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&motion_ctrl);
     writePacket(buffer, motion_ctrl.prefix.length + 4);
     return readMotionCtrlReply(base::Time::fromSeconds(1));
