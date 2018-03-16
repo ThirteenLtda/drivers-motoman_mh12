@@ -42,7 +42,7 @@ void it_tests_if_sending_small_steps_oferflow_the_controller()
 
     std::cout << "Connected" << std::endl;
     base::samples::Joints current_position = readCurrentPosition(driver_streaming);
-    for (int i = 0; i < current_position.size(); i++)
+    for (size_t i = 0; i < current_position.size(); i++)
     {
         current_position[i].speed = 0.0;
         current_position[i].acceleration = 0.0;

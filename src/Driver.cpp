@@ -13,9 +13,9 @@ Driver::Driver()
 }
 // The count above is the maximum packet size
 
-msgs::MotomanMsgType Driver::read()
+msgs::MotomanMsgType Driver::read(base::Time timeout)
 {
-    int packet_size = readPacket(&buffer[0], buffer.size(),base::Time::fromSeconds(2));
+    int packet_size = readPacket(&buffer[0], buffer.size(),timeout);
     return parsePacket(&buffer[0], packet_size);
 }
 

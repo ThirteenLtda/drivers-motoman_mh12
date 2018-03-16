@@ -32,10 +32,9 @@ TEST_F(DriverTest, it_waits_until_a_valid_message_arrives)
     uint32_t msg[] = {40,13,0,0,0};
     uint8_t *buffer = reinterpret_cast<uint8_t*>(&msg);
     pushDataToDriver(buffer, buffer + 20); 
-    uint32_t msg2[] = {0, 0, 0, 0, 0, 0};
     buffer = reinterpret_cast<uint8_t*>(&msg);
     pushDataToDriver(buffer, buffer + 24); 
-    ASSERT_EQ(msgs::MOTOMAN_ROBOT_STATUS, driver.read() );
+    ASSERT_EQ(msgs::MOTOMAN_ROBOT_STATUS, driver.read(base::Time::fromMicroseconds(500000)) );
 }
 
 TEST_F(DriverTest, it_reads_correctly_the_possible_messages_headers)
@@ -43,7 +42,7 @@ TEST_F(DriverTest, it_reads_correctly_the_possible_messages_headers)
     uint32_t status_msg[] = {40, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     uint8_t *buffer = reinterpret_cast<uint8_t*>(&status_msg);
     pushDataToDriver(buffer, buffer + 44);
-    ASSERT_EQ(msgs::MOTOMAN_ROBOT_STATUS, driver.read() );
+    ASSERT_EQ(msgs::MOTOMAN_ROBOT_STATUS, driver.read(base::Time::fromMicroseconds(500000)) );
     
     msgs::JointFeedbackMsg joint_feedback;
     joint_feedback.prefix.length = 36*4;
@@ -59,12 +58,12 @@ TEST_F(DriverTest, it_reads_correctly_the_possible_messages_headers)
     }
     buffer = reinterpret_cast<uint8_t*>(&joint_feedback);
     pushDataToDriver(buffer, buffer + joint_feedback.prefix.length);
-    ASSERT_EQ(msgs::MOTOMAN_JOINT_FEEDBACK, driver.read() );
+    ASSERT_EQ(msgs::MOTOMAN_JOINT_FEEDBACK, driver.read(base::Time::fromMicroseconds(1000)) );
     
     uint8_t jib[] = {0,0,0,0,0};
     buffer = reinterpret_cast<uint8_t*>(&jib);
     pushDataToDriver(buffer, buffer + 20);
-    ASSERT_THROW(driver.read(), iodrivers_base::TimeoutError);
+    ASSERT_THROW(driver.read(base::Time::fromMicroseconds(1000)), iodrivers_base::TimeoutError);
     
 }
 

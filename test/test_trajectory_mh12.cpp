@@ -20,7 +20,7 @@ int main(int argc, char **argv)
   while(true)
   {  
        std::cout << "Streamer Msg received" << std::endl;      
-       msgs::MotomanMsgType msg_type =  driver_streaming.read();
+       msgs::MotomanMsgType msg_type =  driver_streaming.read(base::Time::fromMicroseconds(500000));
        if(msg_type == msgs::MOTOMAN_JOINT_FEEDBACK)
        {
            msgs::MotomanJointFeedback joint_feedback = driver_streaming.getJointFeedback();

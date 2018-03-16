@@ -20,7 +20,7 @@ int main(int argc, char **argv)
   base::samples::Joints current_position;
   while(true)
   {
-       msgs::MotomanMsgType msg_type =  driver_streaming.read();
+       msgs::MotomanMsgType msg_type =  driver_streaming.read(base::Time::fromMicroseconds(1));
        std::cout << "Streamer Msg received" << std::endl;
        if(msg_type == msgs::MOTOMAN_JOINT_FEEDBACK)
        {

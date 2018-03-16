@@ -58,7 +58,7 @@ base::samples::Joints readCurrentPosition(Driver &driver)
     while (true)
     {
         base::samples::Joints target_position;
-        msgs::MotomanMsgType msg_type = driver.read();
+        msgs::MotomanMsgType msg_type = driver.read(base::Time::fromSeconds(2));
         std::cout << ".";
         if (msg_type == msgs::MOTOMAN_JOINT_FEEDBACK)
         {

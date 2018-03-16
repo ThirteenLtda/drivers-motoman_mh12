@@ -12,7 +12,7 @@ class Driver : public iodrivers_base::Driver
   public:
     Driver();
     /** Read available packets on the I/O */
-    msgs::MotomanMsgType read();
+    msgs::MotomanMsgType read(base::Time timeout);
 
     int extractPacket(uint8_t const *buffer, size_t buffer_size) const;
 

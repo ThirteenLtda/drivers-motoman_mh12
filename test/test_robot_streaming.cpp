@@ -16,7 +16,7 @@ int main(int argc, char **argv)
   while(true)
   {
      try{ 
-        msgs::MotomanMsgType msg_type =  driver.read();
+        msgs::MotomanMsgType msg_type =  driver.read(base::Time::fromMicroseconds(500000));
         msgs::MotomanStatus status = driver.getRobotStatus();
         std::cout << "driver powered: " << status.drives_powered << std::endl;
         std::cout << "e stopped: " << status.e_stopped << std::endl;
@@ -24,10 +24,8 @@ int main(int argc, char **argv)
         std::cout << "ln error: " << status.ln_error << std::endl;
         std::cout << "ln motion: " << status.ln_motion << std::endl;
         std::cout << "mode: " << status.mode << std::endl;
-        std::cout << "motion possible: " << status.motion_possible << std::endl;
-        
-        std::cout << "=========" << std::endl;
-        
+        std::cout << "motion possible: " << status.motion_possible << std::endl;    
+        std::cout << "=========" << std::endl;    
         msgs::MotomanJointFeedback joint_feedback = driver.getJointFeedback();
         std::cout << "Robot id: " << joint_feedback.robot_id << std::endl;
         std::cout << "Joint 0: " << joint_feedback.joint_states[0].position << " " << joint_feedback.joint_states[0].speed << std::endl;
