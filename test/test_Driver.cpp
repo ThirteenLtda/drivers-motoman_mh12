@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <motoman_mh12/Msgs.hpp>
 #include <motoman_mh12/Driver.hpp>
-#include <iodrivers_base/FixtureGtest.hpp>
+#include <iodrivers_base/FixtureGTest.hpp>
 #include <iodrivers_base/Exceptions.hpp>
 
 
