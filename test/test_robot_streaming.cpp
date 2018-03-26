@@ -5,7 +5,10 @@
 #include <iostream>
 
 using namespace motoman_mh12;
-
+/**
+ * Test class to receive the messages of the streamer and display 
+ * it on the console
+ * */
 
 int main(int argc, char **argv)
 {

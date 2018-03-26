@@ -7,7 +7,16 @@
 #include <math.h>
 
 using namespace motoman_mh12;
-
+/**
+ * Class to test the behavior of the robot when a 
+ * stop command is sent in the middle of the trajectory
+ * 
+ * Result: the robot stops as soon as possible ("immediately")
+ * and doesn't activate the emmergency brakes. It can receive
+ * a new trajectory after the brake normally. It is mandatory
+ * to restart the sequence count, i.e begin a NEW trajectory, 
+ * otherwise it can lead to extremely wrong trajectories.
+ * */
 int main(int argc, char **argv)
 {
     Driver driver_ctrl;
