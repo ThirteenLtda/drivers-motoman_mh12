@@ -4,7 +4,8 @@
 #include <iodrivers_base/FixtureGTest.hpp>
 #include <iodrivers_base/Exceptions.hpp>
 
-
+/**Test the protocol implementation
+ * */
 using namespace motoman_mh12;
 
 struct DriverTest : public ::testing::Test, public iodrivers_base::Fixture<Driver>

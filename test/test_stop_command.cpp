@@ -8,7 +8,7 @@
 
 using namespace motoman_mh12;
 /**
- * Class to test the behavior of the robot when a 
+ * Test the behavior of the robot when a 
  * stop command is sent in the middle of the trajectory
  * 
  * Result: the robot stops as soon as possible ("immediately")

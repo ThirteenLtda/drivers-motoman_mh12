@@ -2,6 +2,17 @@ motoman_mh12
 =============
 Driver for the Motoman MH12 arm
 
+Tests:
+
+- test_Driver: tests the main functionalities and protocol implementation of the driver
+
+- test_robot_streamming: function to receive the messages of the streamer and display it on the console
+
+- test_add_to_queue: function to test the buffer size to motion commands
+
+- Test the behavior of the robot when a stop command is sent in the middle of the trajectory
+
+- 
 
 
 License
