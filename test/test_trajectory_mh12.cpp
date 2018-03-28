@@ -16,16 +16,15 @@ int main(int argc, char **argv)
   Driver driver_streaming;
   driver_streaming.openTCP("192.168.10.77", 50241);
   
-  std::cout << "Connected" << std::endl;
-  base::samples::Joints current_position;
+  std::vector<base::JointState> current_position;
   while(true)
-  {
-       msgs::MotomanMsgType msg_type =  driver_streaming.read(base::Time::fromMicroseconds(1));
-       std::cout << "Streamer Msg received" << std::endl;
+  {  
+       std::cout << "Streamer Msg received" << std::endl;      
+       msgs::MotomanMsgType msg_type =  driver_streaming.read(base::Time::fromMicroseconds(500000));
        if(msg_type == msgs::MOTOMAN_JOINT_FEEDBACK)
        {
            msgs::MotomanJointFeedback joint_feedback = driver_streaming.getJointFeedback();
-           current_position.elements = joint_feedback.joint_states;
+           current_position = joint_feedback.joint_states;
            std::cout << "Current Position aquired" << std::endl;
            std::cout << "Robot id: " << joint_feedback.robot_id << std::endl;
            for(size_t i = 0; i<joint_feedback.joint_states.size(); i++)
@@ -47,18 +46,22 @@ int main(int argc, char **argv)
       current_position[i].acceleration = 0.0;
   }
   
-  current_position.time = base::Time::fromSeconds(0);
-  reply = driver_ctrl.sendJointTrajPTFullCmd(0, 0, current_position);
+  reply = driver_ctrl.sendJointTrajPTFullCmd(0, 0, base::Time::fromSeconds(0), current_position);
   std::cout << "Result traj: " << reply.result << " for the cmd: " << reply.command << std::endl;
   std::cout << "SubCode: " << reply.subcode << std::endl;
   
-  current_position[0].position = 1.57;
+  current_position[0].position = 0.9;
   
-  current_position.time = base::Time::fromSeconds(5);
-  reply = driver_ctrl.sendJointTrajPTFullCmd(0, 1, current_position);
+  reply = driver_ctrl.sendJointTrajPTFullCmd(0, 1, base::Time::fromSeconds(5), current_position);
   std::cout << "Result traj: " << reply.result << " for the cmd: " << reply.command << std::endl;
   std::cout << "SubCode: " << reply.subcode << std::endl;
  
-  sleep(8);
+  sleep(2);
+  
+  //reply = driver_ctrl.sendMotionCtrl(0, 0, msgs::motion_ctrl::MotionControlCmds::STOP_MOTION);
+  //std::cout << "Result: " << reply.result << " for the cmd: " << reply.command << std::endl;
+  //reply = driver_ctrl.sendMotionCtrl(0, 0, msgs::motion_ctrl::MotionControlCmds::STOP_TRAJ_MODE);
+  //std::cout << "Result: " << reply.result << " for the cmd: " << reply.command << std::endl;
+        
 }
   
