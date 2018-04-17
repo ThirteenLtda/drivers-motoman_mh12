@@ -116,7 +116,6 @@ msgs::MotionReply Driver::parseMotionReply(uint8_t const* buffer)
     motion_reply.result = msg.result;
     motion_reply.subcode = msg.subcode;
     return motion_reply;
-    
 }
 
 float removeNaNs(float a)
@@ -195,23 +194,27 @@ msgs::MotionReply Driver::readMotionCtrlReply(const base::Time& timeout)
     return parseMotionReply(&buffer[0]);
 }
 
-void Driver::parseReadSingleIOReply(uint8_t const* buffer)
+msgs::ReadSingleIo Driver::parseReadSingleIOReply(uint8_t const* buffer)
 {
     msgs::ReadSingleIoReplyMsg const& msg = *reinterpret_cast<msgs::ReadSingleIoReplyMsg const*>(buffer);
+    msgs::ReadSingleIo single_io;
+    single_io.value = msg.value;
+    single_io.result = msg.result_code;
+    return single_io;
 }
 
-void Driver::sendReadSingleIO(int IOaddress)
+msgs::ReadSingleIo Driver::queryReadSingleIO(int32_t IOaddress)
 {
     msgs::ReadSingleIoMsg read_single_io(IOaddress);
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&read_single_io);
-    writePacket(buffer,read_single_io.prefix.length);
-    readSingleIOReply(base::Time::fromSeconds(0.1));
+    writePacket(buffer, read_single_io.prefix.length +4);
+    return readSingleIOReply(base::Time::fromSeconds(1));
 }
 
-void Driver::readSingleIOReply(const base::Time& timeout)
+msgs::ReadSingleIo Driver::readSingleIOReply(const base::Time& timeout)
 {
     waitForReply(timeout, msgs::MOTOMAN_READ_SINGLE_IO_REPLY);
-    parseReadSingleIOReply(&buffer[0]);
+    return parseReadSingleIOReply(&buffer[0]);
 }
 
 bool Driver::sendWriteSingleIo(int IOaddress, int value)
