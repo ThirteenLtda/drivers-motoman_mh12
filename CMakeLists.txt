@@ -2,6 +2,7 @@
 # executed from 'project/build' with 'cmake ../'.
 cmake_minimum_required(VERSION 2.6)
 find_package(Rock)
+set(CMAKE_CXX_STANDARD 11)
 rock_init(motoman_mh12 0.1)
 rock_find_cmake(Boost REQUIRED COMPONENTS system)
 rock_standard_layout()
