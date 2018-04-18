@@ -52,6 +52,8 @@ msgs::MotomanMsgType Driver::parsePacket(uint8_t const* buffer, size_t size)
         case msgs::MOTOMAN_JOINT_FEEDBACK:
             joint_feedback = parseJointFeedback(buffer);
             return msgs::MOTOMAN_JOINT_FEEDBACK;
+        default:
+            throw std::runtime_error("Invalid msg type received"); 
     }
 }
 
@@ -229,7 +231,7 @@ bool Driver::sendWriteSingleIo(int IOaddress, int value)
 bool Driver::parseWriteSingleIOReply(uint8_t const* buffer) const
 {
     msgs::WriteSingleIoReplyMsg const& msg = *reinterpret_cast<msgs::WriteSingleIoReplyMsg const*>(buffer);
-    return (msg.result_code == msgs::write_single_io::SUCCESS);
+    return (msg.result_code == msgs::single_io::ResultCode::SUCCESS);
 }
 
 msgs::MotomanStatus Driver::getRobotStatus()

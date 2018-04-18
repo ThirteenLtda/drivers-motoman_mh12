@@ -210,6 +210,7 @@ namespace motoman_mh12
             result_code(result_code){}
         }__attribute__((packed));
         
+        
         struct MotomanStatus
         {
             //encanpsulation of the message excluding the unknown states, if there is the need we can implement it later    
@@ -410,13 +411,24 @@ namespace motoman_mh12
             }  // MotionReplySubcodes
         }
         
-        namespace write_single_io
+        namespace single_io
         {
-            enum ResultCode
+            namespace Value
             {
-                SUCCESS = 1,
-                FAILURE =2
-            };
+                enum Value
+                {
+                    ON = 1,
+                    OFF = 0
+                };
+            }
+            namespace ResultCode
+            {
+                enum ResultCode
+                {
+                    SUCCESS = 1,
+                    FAILURE = 2
+                };
+            }
         }  
         
     }
