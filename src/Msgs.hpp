@@ -162,7 +162,7 @@ namespace motoman_mh12
             int32_t address; //!< Address of the controller I/O signal to be read. Values from 00010 to 1000559, please refer to the controller Concurrent I/O Manual for details on addresses.  
             
             ReadSingleIoMsg(){}
-            ReadSingleIoMsg(int addres):
+            ReadSingleIoMsg(int address):
             prefix(MOTOMAN_READ_SINGLE_IO),
             address(address){}
         }__attribute__((packed));
@@ -175,11 +175,17 @@ namespace motoman_mh12
             
             ReadSingleIoReplyMsg(){}
             ReadSingleIoReplyMsg(int value, int result_code):
-            prefix(MOTOMAN_READ_SINGLE_IO_REPLY),
-            value(value),
-            result_code(result_code){}
+                prefix(MOTOMAN_READ_SINGLE_IO_REPLY),
+                value(value),
+                result_code(result_code)
+            {}
         }__attribute__((packed));
-        
+
+        struct ReadSingleIo
+        {
+            int value;
+            int result;
+        };
         
         struct WriteSingleIoMsg
         {
@@ -203,6 +209,7 @@ namespace motoman_mh12
             prefix(MOTOMAN_WRITE_SINGLE_IO_REPLY),
             result_code(result_code){}
         }__attribute__((packed));
+        
         
         struct MotomanStatus
         {
@@ -269,7 +276,7 @@ namespace motoman_mh12
             MOTOMAN_MOTION_CTRL_SIZE = sizeof(msgs::MotionCtrlMsg) -4,
             MOTOMAN_READ_SINGLE_IO_SIZE = sizeof(msgs::ReadSingleIoMsg) -4,
             MOTOMAN_WRITE_SINGLE_IO_SIZE = sizeof(msgs::WriteSingleIoMsg) -4,
-            MOTOMAN_MAX_PKT_SIZE = 136+12
+            MOTOMAN_MAX_PKT_SIZE = 148
         };
         /** Returns the expected packet size given a message type, if there is
          * no match, it return -1 to move the buffer pointer
@@ -285,6 +292,8 @@ namespace motoman_mh12
                     return msgs::MOTOMAN_JOINT_FEEDBACK_SIZE;
                 case msgs::MOTOMAN_MOTION_REPLY:
                     return msgs::MOTOMAN_MOTION_REPLY_SIZE;
+                case msgs::MOTOMAN_READ_SINGLE_IO:
+                    return msgs::MOTOMAN_READ_SINGLE_IO_SIZE;
                 case msgs::MOTOMAN_READ_SINGLE_IO_REPLY:
                     return msgs::MOTOMAN_READ_SINGLE_IO_REPLY_SIZE;
                 case msgs::MOTOMAN_WRITE_SINGLE_IO_REPLY:
@@ -402,13 +411,24 @@ namespace motoman_mh12
             }  // MotionReplySubcodes
         }
         
-        namespace write_single_io
+        namespace single_io
         {
-            enum ResultCode
+            namespace Value
             {
-                SUCCESS = 1,
-                FAILURE =2
-            };
+                enum Value
+                {
+                    ON = 1,
+                    OFF = 0
+                };
+            }
+            namespace ResultCode
+            {
+                enum ResultCode
+                {
+                    SUCCESS = 1,
+                    FAILURE = 2
+                };
+            }
         }  
         
     }

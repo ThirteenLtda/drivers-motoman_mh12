@@ -31,9 +31,9 @@ class Driver : public iodrivers_base::Driver
     msgs::MotionReply readJointPositionReply(base::Time const &timeout);
     msgs::MotionReply parseMotionReply(uint8_t const *buffer);
 
-    void sendReadSingleIO(int IOaddress);
-    void readSingleIOReply(const base::Time &timeout);
-    void parseReadSingleIOReply(uint8_t const *buffer);
+    msgs::ReadSingleIo queryReadSingleIO(int32_t IOaddress);
+    msgs::ReadSingleIo readSingleIOReply(const base::Time &timeout);
+    msgs::ReadSingleIo parseReadSingleIOReply(uint8_t const *buffer);
 
     bool sendWriteSingleIo(int IOaddress, int value);
     bool parseWriteSingleIOReply(uint8_t const *buffer) const;

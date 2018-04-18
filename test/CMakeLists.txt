@@ -19,3 +19,7 @@ rock_executable(test_stop_command
 rock_executable(test_add_to_queue
     test_add_to_queue.cpp
     DEPS motoman_mh12)
+
+rock_executable(test_single_io
+    test_single_io.cpp
+    DEPS motoman_mh12)
