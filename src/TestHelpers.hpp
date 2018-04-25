@@ -35,9 +35,9 @@ int send_joint_cmd(Driver& driver_ctrl, int sequence_id, base::samples::Joints t
     // Record start time
     base::Time start = base::Time::now();
     while(true){
-        
+
         reply = driver_ctrl.sendJointTrajPTFullCmd(0, sequence_id, target_position);
-        
+
         if (reply.result == 1)
         {
             busy++;
@@ -49,7 +49,7 @@ int send_joint_cmd(Driver& driver_ctrl, int sequence_id, base::samples::Joints t
             printMotionReply(reply);
             std::cout << "It took " << elapsed << " ms" << " and " << busy << " tries" << std::endl;
             break;
-        } 
+        }
     }
 }
 
@@ -72,6 +72,3 @@ base::samples::Joints readCurrentPosition(Driver &driver)
     }
 }
 }
-
-
-
