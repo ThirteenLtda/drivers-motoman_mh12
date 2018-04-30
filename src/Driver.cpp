@@ -7,7 +7,7 @@
 using namespace motoman_mh12;
 
 Driver::Driver()
-: iodrivers_base::Driver(10*msgs::MOTOMAN_MAX_PKT_SIZE) 
+: iodrivers_base::Driver(10*msgs::MOTOMAN_MAX_PKT_SIZE)
 {
     buffer.resize(10*msgs::MOTOMAN_MAX_PKT_SIZE);
 }
@@ -23,22 +23,22 @@ msgs::MotomanMsgType Driver::read(base::Time timeout)
 int Driver::extractPacket(uint8_t const* buffer, size_t buffer_size) const
 {
     int32_t const* buffer_as_int32 = reinterpret_cast<int32_t const*>(buffer);
-    
+
     if(buffer_size < sizeof(int32_t)*2)
         return 0;
-    
+
     int length = buffer_as_int32[0];
     int msg_type = buffer_as_int32[1];
     int expected_length = msgs::returnMsgSize(msg_type);
-    
+
     if(length != expected_length)
         return -1;
-    
+
     if(buffer_size>=length)
         return expected_length;
     else
         return 0;
-    
+
 }
 
 msgs::MotomanMsgType Driver::parsePacket(uint8_t const* buffer, size_t size)
@@ -53,7 +53,7 @@ msgs::MotomanMsgType Driver::parsePacket(uint8_t const* buffer, size_t size)
             joint_feedback = parseJointFeedback(buffer);
             return msgs::MOTOMAN_JOINT_FEEDBACK;
         default:
-            throw std::runtime_error("Invalid msg type received"); 
+            throw std::runtime_error("Invalid msg type received");
     }
 }
 
@@ -81,7 +81,10 @@ msgs::MotomanStatus Driver::parseReadStatus(uint8_t const* buffer, size_t size) 
         motoman_status.error_code = int(msg.error_code);
     motoman_status.ln_error = interpret_tristate(msg.ln_error);
     motoman_status.ln_motion = interpret_tristate(msg.ln_motion);
-    motoman_status.mode = interpret_tristate(msg.mode);
+    if (msg.mode == 2)
+        motoman_status.mode = true;
+    else
+        motoman_status.mode = false;
     motoman_status.motion_possible = interpret_tristate(msg.motion_possible);
     return motoman_status;
 }
@@ -96,7 +99,7 @@ msgs::MotomanJointFeedback Driver::parseJointFeedback(uint8_t const* buffer) con
     //must be always 6
     if(parsed_joint_feedback.valid_field !=6)
         throw std::runtime_error("Bit-masking of valid fields inconsistent");
-    
+
     parsed_joint_feedback.time.fromSeconds(msg.time);
     for(int i = 0; i<10; i++)
     {
@@ -104,7 +107,7 @@ msgs::MotomanJointFeedback Driver::parseJointFeedback(uint8_t const* buffer) con
         joint_state.position = double(msg.positions[i]);
         parsed_joint_feedback.joint_states.push_back(joint_state);
     }
-    
+
     return parsed_joint_feedback;
 }
 
@@ -133,7 +136,7 @@ float removeNaNs(float a)
 msgs::MotionReply Driver::sendJointTrajPTFullCmd(int robot_id, int sequence_id, base::samples::Joints const& joints_samples)
 {
     msgs::JointTrajPTFullMsg joint_traj_cmd;
-    joint_traj_cmd.prefix.length = msgs::MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE; 
+    joint_traj_cmd.prefix.length = msgs::MOTOMAN_JOINT_TRAJ_PT_FULL_SIZE;
     joint_traj_cmd.prefix.msg_type = msgs::MOTOMAN_JOINT_TRAJ_PT_FULL;
     joint_traj_cmd.robot_id = int32_t(robot_id);
     joint_traj_cmd.sequence_id = int32_t(sequence_id);
@@ -143,7 +146,7 @@ msgs::MotionReply Driver::sendJointTrajPTFullCmd(int robot_id, int sequence_id, 
         joint_traj_cmd.positions[i] =  removeNaNs(joints_samples[i].position);
         joint_traj_cmd.velocities[i] = removeNaNs(joints_samples[i].speed);
         joint_traj_cmd.accelerations[i] = removeNaNs(joints_samples[i].acceleration);
-    
+
     }
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&joint_traj_cmd);
     writePacket(buffer, joint_traj_cmd.prefix.length + 4);
@@ -153,7 +156,7 @@ msgs::MotionReply Driver::sendJointTrajPTFullCmd(int robot_id, int sequence_id, 
 void Driver::waitForReply(base::Time const& timeout, int32_t msg_type)
 {
     base::Timeout deadline(timeout);
-    
+
     while(!deadline.elapsed())
     {
         int packet_size = readPacket(&buffer[0], buffer.size(), deadline.timeLeft());
@@ -180,7 +183,7 @@ msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence_id, int cmd)
     msgs::MotionCtrlMsg motion_ctrl(robot_id, sequence_id, cmd);
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&motion_ctrl);
     writePacket(buffer, motion_ctrl.prefix.length + 4);
-    return readMotionCtrlReply(base::Time::fromSeconds(1));
+    return readMotionCtrlReply(base::Time::fromSeconds(2));
 }
 
 msgs::MotionReply Driver::readJointPositionReply(const base::Time& timeout)
