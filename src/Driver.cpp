@@ -183,7 +183,7 @@ msgs::MotionReply Driver::sendMotionCtrl(int robot_id, int sequence_id, int cmd)
     msgs::MotionCtrlMsg motion_ctrl(robot_id, sequence_id, cmd);
     uint8_t const* buffer = reinterpret_cast<uint8_t const*>(&motion_ctrl);
     writePacket(buffer, motion_ctrl.prefix.length + 4);
-    return readMotionCtrlReply(base::Time::fromSeconds(1));
+    return readMotionCtrlReply(base::Time::fromSeconds(2));
 }
 
 msgs::MotionReply Driver::readJointPositionReply(const base::Time& timeout)
