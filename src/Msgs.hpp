@@ -221,6 +221,7 @@ namespace motoman_mh12
             bool ln_motion; //!< The controller is executing a job(program) 1 = TRUE(ON) 0 = FALSE(OFF)
             bool mode; //!< Controller/Pendant mode 1=Manual(Teach); 0= Auto(Play or Remtote)
             bool motion_possible; //!< Controller can receive motion for ROS 1=Enabled; 0=Disabled
+            base::Time time;
         };
 
         struct JointFeedbackMsg

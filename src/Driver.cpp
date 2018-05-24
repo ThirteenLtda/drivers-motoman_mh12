@@ -86,6 +86,7 @@ msgs::MotomanStatus Driver::parseReadStatus(uint8_t const* buffer, size_t size) 
     else
         motoman_status.mode = false;
     motoman_status.motion_possible = interpret_tristate(msg.motion_possible);
+    motoman_status.time = base::Time::now();
     return motoman_status;
 }
 
@@ -100,7 +101,8 @@ msgs::MotomanJointFeedback Driver::parseJointFeedback(uint8_t const* buffer) con
     if(parsed_joint_feedback.valid_field !=6)
         throw std::runtime_error("Bit-masking of valid fields inconsistent");
 
-    parsed_joint_feedback.time.fromSeconds(msg.time);
+    //parsed_joint_feedback.time.fromSeconds(msg.time);
+    parsed_joint_feedback.time = base::Time::now();
     for(int i = 0; i<10; i++)
     {
         base::JointState joint_state;
